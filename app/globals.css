@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #faf7f2;
+  --cream-dark: #ede7db;
+  --terra: #b5522a;
+  --terra-deep: #9e4421;
+  --ink: #181410;
+  --ink-mid: #6b5d4f;
+  --gold: #e8c46a;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #faf7f2;
+  color: #181410;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* ─── Hero gradient overlay ─── */
+.hero-overlay {
+  background: linear-gradient(
+    rgba(24, 20, 16, 0.52) 0%,
+    rgba(24, 20, 16, 0.22) 45%,
+    rgba(24, 20, 16, 0.78) 100%
+  );
+}
+
+/* ─── Booking CTA texture ─── */
+.cta-texture {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ─── Scroll indicator pulse ─── */
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  50%       { opacity: 1;   transform: scaleY(0.7); }
+}
+.scroll-pulse {
+  animation: scrollPulse 2.2s ease-in-out infinite;
+}
+
+/* ─── Review section decorative quote ─── */
+.review-bg-quote {
+  content: '\201C';
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: 320px;
+  font-style: italic;
+  color: rgba(181, 82, 42, 0.07);
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─── Kitchen dark link ─── */
+.kitchen-link {
+  color: rgba(255,255,255,0.70);
+  border-color: rgba(255,255,255,0.35);
+}
+.kitchen-link:hover {
+  color: rgba(255,255,255,1);
+  border-color: rgba(255,255,255,0.8);
+}
