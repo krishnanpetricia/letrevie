@@ -2,7 +2,7 @@
 
 import { T }           from '@/components/T'
 import { FadeIn }      from '@/components/FadeIn'
-import { BookingForm } from './BookingForm'
+import BookingForm from './BookingForm'
 
 const TRUST = [
   {
