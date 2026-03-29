@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 
 type Booking = {
   id: string
@@ -22,8 +22,10 @@ type BlockedSlot = {
   reason: string | null
 }
 
+const ADMIN_PASSWORD = 'letrevie2024'
+
 export default function AdminPage() {
-  const [auth, setAuth] = useState(false)
+  const [authed, setAuthed] = useState(false)
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
   const [bookings, setBookings] = useState<Booking[]>([])
@@ -35,9 +37,15 @@ export default function AdminPage() {
   const [blockReason, setBlockReason] = useState('')
   const [blockMsg, setBlockMsg] = useState('')
 
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'letrevie2024'
+  useEffect(() => {
+    const stored = localStorage.getItem('ltv_admin')
+    if (stored === 'yes') {
+      setAuthed(true)
+      fetchData()
+    }
+  }, [])
 
-  const loadData = useCallback(async () => {
+  const fetchData = async () => {
     setLoading(true)
     try {
       const [bRes, blRes] = await Promise.all([
@@ -49,24 +57,24 @@ export default function AdminPage() {
       setBookings(bData.bookings || [])
       setBlocked(blData.blocked || [])
     } catch (e) {
-      console.error('Failed to load data', e)
-    } finally {
-      setLoading(false)
+      console.error(e)
     }
-  }, [])
-
-  useEffect(() => {
-    if (auth) {
-      loadData()
-    }
-  }, [auth, loadData])
+    setLoading(false)
+  }
 
   const login = () => {
     if (password === ADMIN_PASSWORD) {
-      setAuth(true)
+      localStorage.setItem('ltv_admin', 'yes')
+      setAuthed(true)
+      fetchData()
     } else {
       setAuthError('Incorrect password.')
     }
+  }
+
+  const logout = () => {
+    localStorage.removeItem('ltv_admin')
+    setAuthed(false)
   }
 
   const handleBlock = async () => {
@@ -79,7 +87,7 @@ export default function AdminPage() {
     if (res.ok) {
       setBlockMsg('Blocked successfully.')
       setBlockDate(''); setBlockTime(''); setBlockReason('')
-      loadData()
+      fetchData()
     } else {
       setBlockMsg('Failed to block.')
     }
@@ -91,7 +99,7 @@ export default function AdminPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     })
-    loadData()
+    fetchData()
   }
 
   const today = new Date().toISOString().split('T')[0]
@@ -104,7 +112,7 @@ export default function AdminPage() {
     return `${d}/${m}/${y}`
   }
 
-  if (!auth) {
+  if (!authed) {
     return (
       <div className="min-h-screen bg-[#fdf8f3] flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
@@ -135,9 +143,14 @@ export default function AdminPage() {
           <h1 className="text-2xl font-light text-[#181410]">Le Tre Vie</h1>
           <p className="text-[#a89070] text-sm tracking-wide uppercase">Admin Dashboard</p>
         </div>
-        <button onClick={loadData} className="text-sm text-[#a89070] hover:text-[#181410] transition-colors">
-          Refresh
-        </button>
+        <div className="flex gap-4">
+          <button onClick={fetchData} className="text-sm text-[#a89070] hover:text-[#181410] transition-colors">
+            Refresh
+          </button>
+          <button onClick={logout} className="text-sm text-[#a89070] hover:text-[#181410] transition-colors">
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-6 mb-8 border-b border-[#e8ddd4]">
@@ -161,7 +174,7 @@ export default function AdminPage() {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <p className="font-medium text-[#181410]">{b.name}</p>
-                  <p className="text-sm text-[#a89070]">{b.email} {b.phone ? `· ${b.phone}` : ''}</p>
+                  <p className="text-sm text-[#a89070]">{b.email}{b.phone ? ` · ${b.phone}` : ''}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-[#181410]">{formatDate(b.date)} · {b.time}</p>
@@ -199,7 +212,7 @@ export default function AdminPage() {
             {blocked.map(b => (
               <div key={b.id} className="flex items-center justify-between bg-white border border-[#e8ddd4] rounded-lg px-5 py-4">
                 <div>
-                  <p className="text-sm text-[#181410]">{formatDate(b.date)} {b.time ? `· ${b.time}` : '· All day'}</p>
+                  <p className="text-sm text-[#181410]">{formatDate(b.date)}{b.time ? ` · ${b.time}` : ' · All day'}</p>
                   {b.reason && <p className="text-xs text-[#a89070]">{b.reason}</p>}
                 </div>
                 <button onClick={() => handleUnblock(b.id)}
