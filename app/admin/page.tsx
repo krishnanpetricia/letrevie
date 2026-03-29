@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 type Booking = {
   id: string
@@ -37,7 +37,7 @@ export default function AdminPage() {
 
   const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'letrevie2024'
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true)
     try {
       const [bRes, blRes] = await Promise.all([
@@ -50,15 +50,16 @@ export default function AdminPage() {
       setBlocked(blData.blocked || [])
     } catch (e) {
       console.error('Failed to load data', e)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
-  }
+  }, [])
 
   useEffect(() => {
     if (auth) {
       loadData()
     }
-  }, [auth])
+  }, [auth, loadData])
 
   const login = () => {
     if (password === ADMIN_PASSWORD) {
@@ -97,6 +98,11 @@ export default function AdminPage() {
   const upcoming = bookings
     .filter(b => b.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
+
+  const formatDate = (dateStr: string) => {
+    const [y, m, d] = dateStr.split('-')
+    return `${d}/${m}/${y}`
+  }
 
   if (!auth) {
     return (
@@ -158,7 +164,7 @@ export default function AdminPage() {
                   <p className="text-sm text-[#a89070]">{b.email} {b.phone ? `· ${b.phone}` : ''}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium text-[#181410]">{b.date} · {b.time}</p>
+                  <p className="text-sm font-medium text-[#181410]">{formatDate(b.date)} · {b.time}</p>
                   <p className="text-sm text-[#a89070]">{b.covers} {Number(b.covers) === 1 ? 'cover' : 'covers'}</p>
                 </div>
               </div>
@@ -193,7 +199,7 @@ export default function AdminPage() {
             {blocked.map(b => (
               <div key={b.id} className="flex items-center justify-between bg-white border border-[#e8ddd4] rounded-lg px-5 py-4">
                 <div>
-                  <p className="text-sm text-[#181410]">{b.date} {b.time ? `· ${b.time}` : '· All day'}</p>
+                  <p className="text-sm text-[#181410]">{formatDate(b.date)} {b.time ? `· ${b.time}` : '· All day'}</p>
                   {b.reason && <p className="text-xs text-[#a89070]">{b.reason}</p>}
                 </div>
                 <button onClick={() => handleUnblock(b.id)}
