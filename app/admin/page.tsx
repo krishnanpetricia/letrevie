@@ -24,8 +24,14 @@ type BlockedSlot = {
 
 const ADMIN_PASSWORD = 'letrevie2024'
 
+function formatDate(dateStr: string) {
+  const [y, m, d] = dateStr.split('-')
+  return `${d}/${m}/${y}`
+}
+
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false)
+  const [ready, setReady] = useState(false)
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
   const [bookings, setBookings] = useState<Booking[]>([])
@@ -37,27 +43,35 @@ export default function AdminPage() {
   const [blockReason, setBlockReason] = useState('')
   const [blockMsg, setBlockMsg] = useState('')
 
+  // Check localStorage after mount (client only)
   useEffect(() => {
     const stored = localStorage.getItem('ltv_admin')
     if (stored === 'yes') {
       setAuthed(true)
+    }
+    setReady(true)
+  }, [])
+
+  // Fetch data whenever authed becomes true
+  useEffect(() => {
+    if (authed) {
       fetchData()
     }
-  }, [])
+  }, [authed])
 
   const fetchData = async () => {
     setLoading(true)
     try {
       const [bRes, blRes] = await Promise.all([
-        fetch('/api/admin/bookings', { cache: 'no-store' }),
-        fetch('/api/admin/blocked', { cache: 'no-store' }),
+        fetch(`/api/admin/bookings?t=${Date.now()}`),
+        fetch(`/api/admin/blocked?t=${Date.now()}`),
       ])
       const bData = await bRes.json()
       const blData = await blRes.json()
       setBookings(bData.bookings || [])
       setBlocked(blData.blocked || [])
     } catch (e) {
-      console.error(e)
+      console.error('Fetch error:', e)
     }
     setLoading(false)
   }
@@ -66,7 +80,6 @@ export default function AdminPage() {
     if (password === ADMIN_PASSWORD) {
       localStorage.setItem('ltv_admin', 'yes')
       setAuthed(true)
-      fetchData()
     } else {
       setAuthError('Incorrect password.')
     }
@@ -75,6 +88,8 @@ export default function AdminPage() {
   const logout = () => {
     localStorage.removeItem('ltv_admin')
     setAuthed(false)
+    setBookings([])
+    setBlocked([])
   }
 
   const handleBlock = async () => {
@@ -107,10 +122,8 @@ export default function AdminPage() {
     .filter(b => b.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
 
-  const formatDate = (dateStr: string) => {
-    const [y, m, d] = dateStr.split('-')
-    return `${d}/${m}/${y}`
-  }
+  // Don't render until client is ready (avoids SSR mismatch)
+  if (!ready) return null
 
   if (!authed) {
     return (
