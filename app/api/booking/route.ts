@@ -62,8 +62,8 @@ export async function POST(req: NextRequest) {
         <div style="padding: 36px; background: #faf7f2; border: 1px solid #ede7db;">
           <p style="font-size: 18px; line-height: 1.8; color: #6b5d4f; margin-top: 0;">
             ${isIt
-              ? 'Abbiamo ricevuto la sua richiesta di prenotazione. La contatteremo a breve per confermarla.'
-              : 'We\'ve received your booking request and will be in touch shortly to confirm.'}
+             `La sua prenotazione per <strong>${covers}</strong> ${Number(covers) === 1 ? 'persona' : 'persone'} è confermata per il <strong>${date}</strong> alle ore <strong>${time}</strong>.`
+: `Your table for <strong>${covers}</strong> ${Number(covers) === 1 ? 'guest' : 'guests'} is confirmed for <strong>${date}</strong> at <strong>${time}</strong>.`
           </p>
 
           <div style="border-left: 3px solid #b5522a; padding: 16px 24px; margin: 28px 0; background: white;">
@@ -112,8 +112,8 @@ export async function POST(req: NextRequest) {
         from:    `Le Tre Vie <${FROM_EMAIL}>`,
         to:      email,
         subject: isIt
-          ? `Richiesta ricevuta — Le Tre Vie, ${date} ore ${time}`
-          : `Booking request received — Le Tre Vie, ${date} at ${time}`,
+    `Prenotazione confermata — Le Tre Vie, ${date} ore ${time}`
+: `Booking confirmed — Le Tre Vie, ${date} at ${time}`
         html:    customerHtml,
       }),
     ])
