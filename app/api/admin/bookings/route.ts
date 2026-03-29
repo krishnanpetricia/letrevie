@@ -9,5 +9,12 @@ export async function GET() {
     .order('time', { ascending: true })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ bookings: data })
+
+  return new NextResponse(JSON.stringify({ bookings: data }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+    },
+  })
 }
