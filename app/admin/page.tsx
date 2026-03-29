@@ -37,26 +37,35 @@ export default function AdminPage() {
 
   const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'letrevie2024'
 
+  const loadData = async () => {
+    setLoading(true)
+    try {
+      const [bRes, blRes] = await Promise.all([
+        fetch('/api/admin/bookings', { cache: 'no-store' }),
+        fetch('/api/admin/blocked', { cache: 'no-store' }),
+      ])
+      const bData = await bRes.json()
+      const blData = await blRes.json()
+      setBookings(bData.bookings || [])
+      setBlocked(blData.blocked || [])
+    } catch (e) {
+      console.error('Failed to load data', e)
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    if (auth) {
+      loadData()
+    }
+  }, [auth])
+
   const login = () => {
     if (password === ADMIN_PASSWORD) {
       setAuth(true)
-      loadData()
     } else {
       setAuthError('Incorrect password.')
     }
-  }
-
-  const loadData = async () => {
-    setLoading(true)
-    const [bRes, blRes] = await Promise.all([
-      fetch('/api/admin/bookings'),
-      fetch('/api/admin/blocked'),
-    ])
-    const bData = await bRes.json()
-    const blData = await blRes.json()
-    setBookings(bData.bookings || [])
-    setBlocked(blData.blocked || [])
-    setLoading(false)
   }
 
   const handleBlock = async () => {
