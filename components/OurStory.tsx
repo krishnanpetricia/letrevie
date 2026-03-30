@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { T } from './T'
 import { FadeIn } from './FadeIn'
 
-const STORY_IMG = '/images/dining-room.jpg'
+const STORY_IMG = '/images/dining-room.jpg.jpeg'
 
 export function OurStory() {
   return (
