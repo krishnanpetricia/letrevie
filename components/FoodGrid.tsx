@@ -4,12 +4,7 @@ import Image from 'next/image'
 import { T } from './T'
 
 const dishes = [
-  {
-    src:  'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=700&q=80',
-    alt:  'Pasta alle Sarde',
-    cat:  <T en="First Course" it="Primo Piatto" />,
-    name: 'Pasta alle Sarde',
-  },
+ 
   {
     src:  '/images/dish-tuna.jpg',
     alt:  'Tonno in crosta di pistacchio',
