@@ -2,21 +2,6 @@
 
 import { useState, useRef } from 'react'
 
-const LABELS = {
-  title:         'Aggiorna il sito',
-  subtitle:      'Solo per uso interno.',
-  passwordLabel: 'Password',
-  passwordBtn:   'Entra',
-  wrongPassword: 'Password errata.',
-  menuTitle:     'Menu',
-  menuDesc:      'Carica un nuovo PDF per aggiornare il menu sul sito.',
-  menuBtn:       'Carica nuovo menu',
-  menuSuccess:   'Menu aggiornato. Le modifiche sono live.',
-  menuError:     'Errore durante il caricamento. Riprova.',
-  menuFiletype:  'Seleziona un file PDF.',
-  saving:        'Caricamento in corso...',
-}
-
 export default function EditPage() {
   const [password,    setPassword]    = useState('')
   const [authed,      setAuthed]      = useState(false)
@@ -26,18 +11,15 @@ export default function EditPage() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   async function handleAuth() {
-    const formData = new FormData()
-    formData.append('file', new Blob([''], { type: 'application/pdf' }), 'check.pdf')
-    const res = await fetch('/api/upload-menu', {
+    const res = await fetch('/api/auth-check', {
       method: 'POST',
       headers: { 'x-admin-password': password },
-      body: formData,
     })
-    if (res.status === 401) {
-      setAuthError(true)
-    } else {
+    if (res.ok) {
       setAuthed(true)
       setAuthError(false)
+    } else {
+      setAuthError(true)
     }
   }
 
@@ -45,7 +27,7 @@ export default function EditPage() {
     const file = fileRef.current?.files?.[0]
     if (!file) return
     if (file.type !== 'application/pdf') {
-      setMenuMessage({ ok: false, text: LABELS.menuFiletype })
+      setMenuMessage({ ok: false, text: 'Seleziona un file PDF.' })
       return
     }
 
@@ -64,10 +46,10 @@ export default function EditPage() {
     setUploading(false)
 
     if (res.ok) {
-      setMenuMessage({ ok: true, text: LABELS.menuSuccess })
+      setMenuMessage({ ok: true, text: 'Menu aggiornato. Le modifiche sono live.' })
       if (fileRef.current) fileRef.current.value = ''
     } else {
-      setMenuMessage({ ok: false, text: LABELS.menuError })
+      setMenuMessage({ ok: false, text: 'Errore durante il caricamento. Riprova.' })
     }
   }
 
@@ -76,24 +58,24 @@ export default function EditPage() {
       <div className="min-h-screen bg-cream flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <p className="font-cormorant text-[32px] italic text-ink mb-8 text-center">
-            {LABELS.title}
+            Aggiorna il sito
           </p>
           <input
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAuth()}
-            placeholder={LABELS.passwordLabel}
+            placeholder="Password"
             className="w-full border border-black/20 bg-transparent px-4 py-3 text-[14px] text-ink placeholder:text-ink-mid outline-none focus:border-terra mb-4"
           />
           {authError && (
-            <p className="text-[12px] text-red-600 mb-4">{LABELS.wrongPassword}</p>
+            <p className="text-[12px] text-red-600 mb-4">Password errata.</p>
           )}
           <button
             onClick={handleAuth}
             className="w-full bg-terra text-white text-[11px] tracking-[0.24em] uppercase px-6 py-4 hover:bg-terra-deep transition-colors"
           >
-            {LABELS.passwordBtn}
+            Entra
           </button>
         </div>
       </div>
@@ -104,12 +86,12 @@ export default function EditPage() {
     <div className="min-h-screen bg-cream px-6 py-20">
       <div className="max-w-lg mx-auto">
 
-        <p className="font-cormorant text-[36px] italic text-ink mb-2">{LABELS.title}</p>
-        <p className="text-[14px] text-ink-mid mb-16">{LABELS.subtitle}</p>
+        <p className="font-cormorant text-[36px] italic text-ink mb-2">Aggiorna il sito</p>
+        <p className="text-[14px] text-ink-mid mb-16">Solo per uso interno.</p>
 
         <div className="border border-black/10 p-8">
-          <p className="text-[9px] tracking-[0.28em] uppercase text-terra mb-2">{LABELS.menuTitle}</p>
-          <p className="text-[14px] text-ink-mid mb-6">{LABELS.menuDesc}</p>
+          <p className="text-[9px] tracking-[0.28em] uppercase text-terra mb-2">Menu</p>
+          <p className="text-[14px] text-ink-mid mb-6">Carica un nuovo PDF per aggiornare il menu sul sito.</p>
 
           <input
             ref={fileRef}
@@ -123,7 +105,7 @@ export default function EditPage() {
             disabled={uploading}
             className="bg-terra text-white text-[11px] tracking-[0.24em] uppercase px-10 py-4 hover:bg-terra-deep transition-colors disabled:opacity-50"
           >
-            {uploading ? LABELS.saving : LABELS.menuBtn}
+            {uploading ? 'Caricamento in corso...' : 'Carica nuovo menu'}
           </button>
 
           {menuMessage && (
