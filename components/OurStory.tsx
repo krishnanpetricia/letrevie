@@ -4,8 +4,7 @@ import Image from 'next/image'
 import { T } from './T'
 import { FadeIn } from './FadeIn'
 
-const STORY_IMG =
-  'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&q=80'
+const STORY_IMG = '/images/dining-room.jpg'
 
 export function OurStory() {
   return (
