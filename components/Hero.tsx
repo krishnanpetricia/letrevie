@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { T } from './T'
 
-const HERO_IMG = '/images/exterior.jpg'
+const HERO_IMG = '/images/hero-dining.jpg'
 
 export function Hero() {
   return (
