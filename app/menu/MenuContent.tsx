@@ -4,7 +4,7 @@ import { PageHero } from '@/components/PageHero'
 import { T }        from '@/components/T'
 import { FadeIn }   from '@/components/FadeIn'
 
-const MENU_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/menus/menu.pdf`
+const MENU_URL = process.env.NEXT_PUBLIC_SUPABASE_URL + '/storage/v1/object/public/menus/menu.pdf'
 
 export function MenuContent() {
   return (
