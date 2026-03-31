@@ -1,33 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
-// Operating hours by day (0 = Sunday, 1 = Monday, ... 6 = Saturday)
-// Dinner: 19:00–22:30 daily except Wednesday (3)
-// Sunday lunch: 12:00–14:00
+type Hours = {
+  dinner_open: string
+  dinner_close: string
+  lunch_open: string
+  lunch_close: string
+  closed_day: number
+  lunch_day: number
+}
 
-function generateSlots(date: string): string[] {
+const DEFAULT_HOURS: Hours = {
+  dinner_open: '19:00',
+  dinner_close: '22:30',
+  lunch_open: '12:00',
+  lunch_close: '14:00',
+  closed_day: 3,
+  lunch_day: 0,
+}
+
+async function getHours(): Promise<Hours> {
+  try {
+    const { data } = await supabaseAdmin
+      .from('settings')
+      .select('value')
+      .eq('key', 'opening_hours')
+      .single()
+    if (data?.value) return JSON.parse(data.value)
+  } catch {}
+  return DEFAULT_HOURS
+}
+
+function timeToMinutes(t: string): number {
+  const [h, m] = t.split(':').map(Number)
+  return h * 60 + m
+}
+
+function minutesToTime(mins: number): string {
+  const h = Math.floor(mins / 60)
+  const m = mins % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+}
+
+function generateSlots(date: string, hours: Hours): string[] {
   const d = new Date(date)
-  const day = d.getDay() // 0 = Sunday
-
+  const day = d.getDay()
   const slots: string[] = []
 
-  // Sunday lunch
-  if (day === 0) {
-    let h = 12, m = 0
-    while (h < 14 || (h === 14 && m === 0)) {
-      slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
-      m += 15
-      if (m === 60) { h++; m = 0 }
+  if (day === hours.lunch_day) {
+    let mins = timeToMinutes(hours.lunch_open)
+    const end = timeToMinutes(hours.lunch_close)
+    while (mins <= end) {
+      slots.push(minutesToTime(mins))
+      mins += 15
     }
   }
 
-  // Dinner (all days except Wednesday)
-  if (day !== 3) {
-    let h = 19, m = 0
-    while (h < 22 || (h === 22 && m <= 30)) {
-      slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
-      m += 15
-      if (m === 60) { h++; m = 0 }
+  if (day !== hours.closed_day) {
+    let mins = timeToMinutes(hours.dinner_open)
+    const end = timeToMinutes(hours.dinner_close)
+    while (mins <= end) {
+      slots.push(minutesToTime(mins))
+      mins += 15
     }
   }
 
@@ -42,7 +76,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Date required' }, { status: 400 })
   }
 
-  // Check if entire day is blocked
   const { data: blockedDay } = await supabaseAdmin
     .from('blocked_slots')
     .select('id')
@@ -54,7 +87,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ slots: [] })
   }
 
-  // Get blocked individual slots
   const { data: blockedSlots } = await supabaseAdmin
     .from('blocked_slots')
     .select('time')
@@ -63,20 +95,19 @@ export async function GET(req: NextRequest) {
 
   const blockedTimes = new Set((blockedSlots || []).map((b) => b.time))
 
-  // Get existing bookings for the date
   const { data: bookings } = await supabaseAdmin
     .from('bookings')
     .select('time, covers')
     .eq('date', date)
 
-  // Sum covers per slot
   const coversBySlot: Record<string, number> = {}
   for (const b of bookings || []) {
     coversBySlot[b.time] = (coversBySlot[b.time] || 0) + Number(b.covers)
   }
 
-  // Build available slots
-  const allSlots = generateSlots(date)
+  const hours = await getHours()
+  const allSlots = generateSlots(date, hours)
+
   const available = allSlots.filter((slot) => {
     if (blockedTimes.has(slot)) return false
     const booked = coversBySlot[slot] || 0
