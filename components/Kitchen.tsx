@@ -5,7 +5,7 @@ import { T } from './T'
 import { FadeIn } from './FadeIn'
 
 const KITCHEN_IMG =
-  'https://images.unsplash.com/photo-1551218372-a8789b81b253?w=900&q=80'
+  'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Le%20Tre%20Vie%20Venue%20Shot.jpeg'
 
 export function Kitchen() {
   return (
