@@ -6,15 +6,23 @@ import { usePathname } from 'next/navigation'
 import { T } from './T'
 import { useLang, type Lang } from '@/context/LangContext'
 
+// ─── Swap these URLs once PDFs are uploaded to Supabase Storage ───────────────
+const MENU_PDFS = {
+  menu:   'https://YOUR_PROJECT.supabase.co/storage/v1/object/public/menus/menu.pdf',
+  giorno: 'https://YOUR_PROJECT.supabase.co/storage/v1/object/public/menus/piatti-del-giorno.pdf',
+  vini:   'https://YOUR_PROJECT.supabase.co/storage/v1/object/public/menus/carta-dei-vini.pdf',
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export function Nav() {
-  const [scrolled,    setScrolled]    = useState(false)
-  const [menuOpen,    setMenuOpen]    = useState(false)
-  const [mobileOpen,  setMobileOpen]  = useState(false)
-  const [foodOpen,    setFoodOpen]    = useState(false)
-  const pathname                      = usePathname()
-  const isHome                        = pathname === '/'
-  const { lang, setLang }             = useLang()
-  const dropdownRef                   = useRef<HTMLLIElement>(null)
+  const [scrolled,   setScrolled]   = useState(false)
+  const [menuOpen,   setMenuOpen]   = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [foodOpen,   setFoodOpen]   = useState(false)
+  const pathname                    = usePathname()
+  const isHome                      = pathname === '/'
+  const { lang, setLang }           = useLang()
+  const dropdownRef                 = useRef<HTMLLIElement>(null)
 
   useEffect(() => {
     setScrolled(window.scrollY > 80)
@@ -23,7 +31,6 @@ export function Nav() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close desktop dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -34,7 +41,6 @@ export function Nav() {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  // Lock body scroll when mobile menu open
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -77,13 +83,13 @@ export function Nav() {
           {/* ── DESKTOP NAV ── */}
           <ul className="hidden md:flex items-center gap-7 list-none">
 
-            {/* Menu dropdown */}
+            {/* Menu PDF dropdown */}
             <li ref={dropdownRef} className="relative flex items-center">
               <button
                 onClick={() => setMenuOpen((v) => !v)}
                 className={['flex items-center gap-1.5 bg-transparent border-0 cursor-pointer p-0', linkCls].join(' ')}
               >
-                <T en="Menu" it="Menu" />
+                <T en="Menu" it="Menù" />
                 <svg
                   className={`w-2.5 h-2.5 transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`}
                   viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.8"
@@ -93,15 +99,34 @@ export function Nav() {
               </button>
 
               {menuOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-black/6 min-w-[148px] py-2 z-50">
-                  <Link href="/menu" onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-5 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink hover:bg-cream no-underline transition-colors duration-150">
-                    <span>🍝</span><T en="Food" it="Cucina" />
-                  </Link>
-                  <Link href="/wine" onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-5 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink hover:bg-cream no-underline transition-colors duration-150">
-                    <span>🍷</span><T en="Wine" it="Vini" />
-                  </Link>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-black/6 min-w-[180px] py-2 z-50">
+                  
+                    href={MENU_PDFS.menu}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-5 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink hover:bg-cream no-underline transition-colors duration-150"
+                  >
+                    <T en="Menù" it="Menù" />
+                  </a>
+                  
+                    href={MENU_PDFS.giorno}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-5 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink hover:bg-cream no-underline transition-colors duration-150"
+                  >
+                    <T en="Piatti del Giorno" it="Piatti del Giorno" />
+                  </a>
+                  
+                    href={MENU_PDFS.vini}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-5 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink hover:bg-cream no-underline transition-colors duration-150"
+                  >
+                    <T en="Carta dei Vini" it="Carta dei Vini" />
+                  </a>
                 </div>
               )}
             </li>
@@ -185,7 +210,7 @@ export function Nav() {
           ].join(' ')}
         />
 
-        {/* Panel — slides in from right */}
+        {/* Panel */}
         <div
           className={[
             'absolute top-0 right-0 h-full w-72 bg-white flex flex-col',
@@ -212,13 +237,13 @@ export function Nav() {
           {/* Panel links */}
           <nav className="flex flex-col flex-1 px-7 py-8 gap-1 overflow-y-auto">
 
-            {/* Menu accordion */}
+            {/* Menu PDF accordion */}
             <div>
               <button
                 onClick={() => setFoodOpen((v) => !v)}
                 className="w-full flex items-center justify-between py-4 text-[12px] tracking-[0.22em] uppercase text-ink font-normal border-b border-black/6 bg-transparent border-x-0 border-t-0 cursor-pointer"
               >
-                <T en="Menu" it="Menu" />
+                <T en="Menu" it="Menù" />
                 <svg
                   className={`w-3 h-3 transition-transform duration-200 text-ink-mid ${foodOpen ? 'rotate-180' : ''}`}
                   viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.8"
@@ -229,22 +254,36 @@ export function Nav() {
 
               {foodOpen && (
                 <div className="pl-4 py-2 flex flex-col gap-1">
-                  <Link href="/menu" onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink no-underline transition-colors duration-150">
-                    <span>🍝</span><T en="Food" it="Cucina" />
-                  </Link>
-                  <Link href="/wine" onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink no-underline transition-colors duration-150">
-                    <span>🍷</span><T en="Wine" it="Vini" />
-                  </Link>
+                  
+                    href={MENU_PDFS.menu}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink no-underline transition-colors duration-150"
+                  >
+                    <T en="Menù" it="Menù" />
+                  </a>
+                  
+                    href={MENU_PDFS.giorno}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink no-underline transition-colors duration-150"
+                  >
+                    <T en="Piatti del Giorno" it="Piatti del Giorno" />
+                  </a>
+                  
+                    href={MENU_PDFS.vini}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink no-underline transition-colors duration-150"
+                  >
+                    <T en="Carta dei Vini" it="Carta dei Vini" />
+                  </a>
                 </div>
               )}
             </div>
-
-            <Link href="/about" onClick={() => setMobileOpen(false)}
-              className="py-4 text-[12px] tracking-[0.22em] uppercase text-ink border-b border-black/6 no-underline hover:text-terra transition-colors duration-200">
-              <T en="Our Story" it="La Storia" />
-            </Link>
 
             <Link href="/#find-us" onClick={() => setMobileOpen(false)}
               className="py-4 text-[12px] tracking-[0.22em] uppercase text-ink border-b border-black/6 no-underline hover:text-terra transition-colors duration-200">
@@ -252,7 +291,7 @@ export function Nav() {
             </Link>
           </nav>
 
-          {/* Panel footer — Book Now */}
+          {/* Panel footer */}
           <div className="px-7 py-6 border-t border-black/8">
             <Link
               href="/reserve"
