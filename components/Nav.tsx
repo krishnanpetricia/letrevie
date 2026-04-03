@@ -7,9 +7,9 @@ import { T } from './T'
 import { useLang, type Lang } from '@/context/LangContext'
 
 const MENU_PDFS = {
-  menu:   'https://placeholder.com/menu.pdf',
-  giorno: 'https://placeholder.com/giorno.pdf',
-  vini:   'https://placeholder.com/vini.pdf',
+  menu:   'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Menu%20(1).pdf',
+  giorno: 'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Piatti%20del%20Giorno.pdf',
+  vini:   'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Carta%20dei%20Vini.pdf',
 }
 
 export function Nav() {
