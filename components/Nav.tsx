@@ -105,7 +105,7 @@ export function Nav() {
                     onClick={() => setMenuOpen(false)}
                     className="block px-5 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink hover:bg-cream no-underline transition-colors duration-150"
                   >
-                    <T en="Menu" it="Menu" />
+                    <T en="Menu" it="Menù" />
                   </a>
                   <a
                     href={MENU_PDFS.giorno}
@@ -114,7 +114,7 @@ export function Nav() {
                     onClick={() => setMenuOpen(false)}
                     className="block px-5 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink hover:bg-cream no-underline transition-colors duration-150"
                   >
-                    <T en="Piatti del Giorno" it="Piatti del Giorno" />
+                    <T en="Daily Specials" it="Piatti del Giorno" />
                   </a>
                   <a
                     href={MENU_PDFS.vini}
@@ -123,7 +123,7 @@ export function Nav() {
                     onClick={() => setMenuOpen(false)}
                     className="block px-5 py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink hover:bg-cream no-underline transition-colors duration-150"
                   >
-                    <T en="Carta dei Vini" it="Carta dei Vini" />
+                    <T en="Wine List" it="Carta dei Vini" />
                   </a>
                 </div>
               )}
@@ -259,7 +259,7 @@ export function Nav() {
                     onClick={() => setMobileOpen(false)}
                     className="block py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink no-underline transition-colors duration-150"
                   >
-                    <T en="Menu" it="Menu" />
+                    <T en="Menu" it="Menù" />
                   </a>
                   <a
                     href={MENU_PDFS.giorno}
@@ -268,7 +268,7 @@ export function Nav() {
                     onClick={() => setMobileOpen(false)}
                     className="block py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink no-underline transition-colors duration-150"
                   >
-                    <T en="Piatti del Giorno" it="Piatti del Giorno" />
+                    <T en="Daily Specials" it="Piatti del Giorno" />
                   </a>
                   <a
                     href={MENU_PDFS.vini}
@@ -277,7 +277,7 @@ export function Nav() {
                     onClick={() => setMobileOpen(false)}
                     className="block py-3 text-[11px] tracking-[0.18em] uppercase text-ink-mid hover:text-ink no-underline transition-colors duration-150"
                   >
-                    <T en="Carta dei Vini" it="Carta dei Vini" />
+                    <T en="Wine List" it="Carta dei Vini" />
                   </a>
                 </div>
               )}
