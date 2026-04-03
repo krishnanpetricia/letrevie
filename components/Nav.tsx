@@ -6,13 +6,11 @@ import { usePathname } from 'next/navigation'
 import { T } from './T'
 import { useLang, type Lang } from '@/context/LangContext'
 
-// ─── Swap these URLs once PDFs are uploaded to Supabase Storage ───────────────
 const MENU_PDFS = {
-  menu:   'https://YOUR_PROJECT.supabase.co/storage/v1/object/public/menus/menu.pdf',
-  giorno: 'https://YOUR_PROJECT.supabase.co/storage/v1/object/public/menus/piatti-del-giorno.pdf',
-  vini:   'https://YOUR_PROJECT.supabase.co/storage/v1/object/public/menus/carta-dei-vini.pdf',
+  menu:   'https://placeholder.com/menu.pdf',
+  giorno: 'https://placeholder.com/giorno.pdf',
+  vini:   'https://placeholder.com/vini.pdf',
 }
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function Nav() {
   const [scrolled,   setScrolled]   = useState(false)
