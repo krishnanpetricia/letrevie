@@ -21,7 +21,7 @@ const dishes = [
 
 export function FoodGrid() {
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+    <section className="grid grid-cols-1 sm:grid-cols-2">
       {dishes.map(({ src, alt, cat, name }) => (
         <div key={src} className="relative overflow-hidden aspect-[4/3] group">
           <Image
