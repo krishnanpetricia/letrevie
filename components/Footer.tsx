@@ -3,9 +3,9 @@
 import { T } from './T'
 
 const SOCIAL = [
-  { label: 'Instagram',   href: 'https://www.instagram.com/' },
-  { label: 'Facebook',    href: 'https://www.facebook.com/'  },
-  { label: 'TripAdvisor', href: 'https://www.tripadvisor.com/' },
+  { label: 'Instagram',   href: 'https://www.instagram.com/explore/locations/1948009408849490/osteria-pizzeria-le-tre-vie/' },
+  { label: 'Facebook',    href: 'https://www.facebook.com/osterialetrevie/' },
+  { label: 'TripAdvisor', href: 'https://www.tripadvisor.com/Restaurant_Review-g187892-d13944570-Reviews-Osteria_Pizzeria_Le_Tre_Vie-Taormina_Province_of_Messina_Sicily.html' },
 ]
 
 export function Footer() {
