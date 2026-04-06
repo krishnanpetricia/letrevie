@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { T } from './T'
 import { FadeIn } from './FadeIn'
 
@@ -11,12 +10,11 @@ export function OurStory() {
     <section id="story" className="grid grid-cols-1 md:grid-cols-2 min-h-[560px]">
       {/* Image */}
       <div className="relative overflow-hidden min-h-[320px] md:min-h-0 group">
-        <Image
+        <img
           src={STORY_IMG}
           alt="Osteria Le Tre Vie interior"
-          fill
           className="object-cover object-center transition-transform duration-[1100ms] ease-out group-hover:scale-[1.04]"
-          sizes="(max-width: 768px) 100vw, 50vw"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
           loading="lazy"
         />
       </div>
