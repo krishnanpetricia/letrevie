@@ -3,7 +3,7 @@
 import { T } from './T'
 import { FadeIn } from './FadeIn'
 
-const STORY_IMG = 'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Le%20Tre%20Vie%20Venue%20Shot.jpeg'
+const STORY_IMG = '/images/exterior-view.png'
 
 export function OurStory() {
   return (
