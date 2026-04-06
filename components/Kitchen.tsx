@@ -1,15 +1,11 @@
 'use client'
 
-import Image from 'next/image'
 import { T } from './T'
 import { FadeIn } from './FadeIn'
 
-const KITCHEN_IMG =
-  'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Le%20Tre%20Vie%20Venue%20Shot.jpeg'
-
 export function Kitchen() {
   return (
-    <section id="kitchen" className="bg-ink grid grid-cols-1 md:grid-cols-2 min-h-[520px]">
+    <section id="kitchen" className="bg-ink grid grid-cols-1 min-h-[520px]">
       {/* Copy */}
       <FadeIn className="flex flex-col justify-center px-8 py-14 md:px-20 md:py-[90px]">
         <span className="text-gold text-[9px] tracking-[0.34em] uppercase font-normal mb-5">
@@ -60,24 +56,12 @@ export function Kitchen() {
           <T en="Book Your Table →" it="Prenota il Tuo Tavolo →" />
         </a>
         <a
-          href="/about"
+          href="/reserve"
           className="mt-4 self-start text-[11px] tracking-[0.22em] uppercase text-white/50 hover:text-white/90 border-b border-white/20 hover:border-white/50 pb-0.5 transition-colors duration-200 no-underline"
         >
           <T en="About Rosario & the restaurant →" it="La nostra storia →" />
         </a>
       </FadeIn>
-
-      {/* Image */}
-      <div className="relative overflow-hidden min-h-[320px] md:min-h-0 group order-first md:order-last">
-        <Image
-          src={KITCHEN_IMG}
-          alt="Chef Rosario at work"
-          fill
-          className="object-cover object-center transition-transform duration-[1100ms] ease-out group-hover:scale-[1.04]"
-          sizes="(max-width: 768px) 100vw, 50vw"
-          loading="lazy"
-        />
-      </div>
     </section>
   )
 }
