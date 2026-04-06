@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'Restaurant',
-  name: 'Osteria Le Tre Vie',
+  name: 'Osteria Pizzeria Le Tre Vie',
   image: `${SITE_URL}/og-image.jpg`,
   url: SITE_URL,
   telephone: '+39 352 041 5653',
