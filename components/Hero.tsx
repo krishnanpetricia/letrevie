@@ -85,7 +85,6 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4, duration: 0.8 }}
       >
-        <span className="text-white/50 text-[9px] tracking-[0.3em] uppercase">Scroll</span>
         <div className="w-px h-12 bg-gradient-to-b from-white/60 to-transparent scroll-pulse" />
       </motion.div>
     </section>
