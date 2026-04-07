@@ -149,8 +149,8 @@ export default function AdminPage() {
     setLoading(true)
     try {
       const [bRes, blRes] = await Promise.all([
-        fetch(`/api/admin/bookings?t=${Date.now()}`),
-        fetch(`/api/admin/blocked?t=${Date.now()}`),
+        fetch(`/api/admin/bookings?t=${Date.now()}`, { cache: 'no-store' }),
+        fetch(`/api/admin/blocked?t=${Date.now()}`, { cache: 'no-store' }),
       ])
       console.log('[fetchData] bookings status:', bRes.status)
       const bData = await bRes.json()
