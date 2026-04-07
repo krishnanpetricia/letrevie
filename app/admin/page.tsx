@@ -276,7 +276,6 @@ export default function AdminPage() {
         setAddForm({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
         setAddSlots([])
         setTab('bookings')
-        await fetchData()
       } else {
         const d = await res.json().catch(() => ({}))
         setAddMsg({ ok: false, text: d.error || 'Failed to add booking.' })
