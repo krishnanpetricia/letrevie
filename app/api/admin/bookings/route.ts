@@ -8,6 +8,7 @@ export async function GET() {
     .from('bookings')
     .select('*')
     .gte('date', today)
+    .eq('status', 'confirmed')
     .order('date', { ascending: true })
     .order('time', { ascending: true })
 

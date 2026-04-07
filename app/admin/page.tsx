@@ -13,6 +13,7 @@ type Booking = {
   covers: number
   lang: string
   notes: string
+  status: string
 }
 
 type BlockedSlot = {
@@ -49,6 +50,8 @@ export default function AdminPage() {
   const [blocked, setBlocked] = useState<BlockedSlot[]>([])
   const [loading, setLoading] = useState(false)
   const [noteModal, setNoteModal] = useState<{ name: string; note: string } | null>(null)
+  const [cancelTarget, setCancelTarget] = useState<Booking | null>(null)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
 
   const [addForm, setAddForm] = useState({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
   const [addSlots, setAddSlots] = useState<string[]>([])
@@ -269,6 +272,20 @@ export default function AdminPage() {
     }
   }
 
+  const handleCancel = async (booking: Booking) => {
+    setCancellingId(booking.id)
+    setCancelTarget(null)
+    const res = await fetch('/api/admin/cancel-booking', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': getStoredPassword() },
+      body: JSON.stringify({ id: booking.id }),
+    })
+    setCancellingId(null)
+    if (res.ok) {
+      await fetchData()
+    }
+  }
+
   const _now = new Date()
   const today = [
     _now.getFullYear(),
@@ -363,17 +380,27 @@ export default function AdminPage() {
                 <div className="text-right flex flex-col items-end gap-1">
                   <p className="text-sm font-medium text-[#181410]">{formatDate(b.date)} · {b.time}</p>
                   <p className="text-sm text-[#a89070]">{b.covers} {Number(b.covers) === 1 ? 'cover' : 'covers'}</p>
-                  {b.notes && (
+                  <div className="flex items-center gap-2 mt-1">
+                    {b.notes && (
+                      <button
+                        onClick={() => setNoteModal({ name: b.name, note: b.notes })}
+                        className="text-[#a89070] hover:text-[#6b5d4f] transition-colors"
+                        title="View note"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round">
+                          <path d="M14 1H2C1.45 1 1 1.45 1 2v8c0 .55.45 1 1 1h2v3l3-3h7c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1z" />
+                        </svg>
+                      </button>
+                    )}
                     <button
-                      onClick={() => setNoteModal({ name: b.name, note: b.notes })}
-                      className="mt-1 text-[#a89070] hover:text-[#6b5d4f] transition-colors"
-                      title="View note"
+                      onClick={() => setCancelTarget(b)}
+                      disabled={cancellingId === b.id}
+                      className="text-xs text-[#a89070] hover:text-[#b5522a] transition-colors disabled:opacity-40"
+                      title="Cancel booking"
                     >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round">
-                        <path d="M14 1H2C1.45 1 1 1.45 1 2v8c0 .55.45 1 1 1h2v3l3-3h7c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1z" />
-                      </svg>
+                      {cancellingId === b.id ? 'Cancelling…' : 'Cancel'}
                     </button>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -691,6 +718,39 @@ export default function AdminPage() {
             >
               {addSubmitting ? 'Saving…' : 'Add Booking'}
             </button>
+          </div>
+        </div>
+      )}
+
+      {cancelTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/30"
+          onClick={() => setCancelTarget(null)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm space-y-4"
+            onClick={e => e.stopPropagation()}
+          >
+            <p className="font-medium text-[#181410]">Cancel this booking?</p>
+            <p className="text-sm text-[#6b5d4f] leading-relaxed">
+              {cancelTarget.name} &mdash; {formatDate(cancelTarget.date)} at {cancelTarget.time}
+              <br />
+              This cannot be undone.
+            </p>
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => setCancelTarget(null)}
+                className="flex-1 py-2 rounded-lg border border-[#c4a882] text-sm text-[#6b5d4f] hover:bg-[#fdf8f3] transition-colors"
+              >
+                Keep booking
+              </button>
+              <button
+                onClick={() => handleCancel(cancelTarget)}
+                className="flex-1 py-2 rounded-lg bg-[#b5522a] text-white text-sm hover:bg-[#9a4424] transition-colors"
+              >
+                Yes, cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

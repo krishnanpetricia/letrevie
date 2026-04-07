@@ -18,11 +18,12 @@ export async function POST(req: NextRequest) {
       name,
       date,
       time,
-      covers: Number(covers),
-      phone:  phone  || null,
-      email:  email  || null,
-      notes:  notes  || null,
-      lang:   lang   || 'en',
+      covers:  Number(covers),
+      phone:   phone  || null,
+      email:   email  || null,
+      notes:   notes  || null,
+      lang:    lang   || 'en',
+      status:  'confirmed',
     })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
