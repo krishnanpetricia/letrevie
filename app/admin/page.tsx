@@ -90,12 +90,30 @@ export default function AdminPage() {
   }, [authed])
 
   useEffect(() => {
-    if (!addForm.date) { setAddSlots([]); return }
+    if (!addForm.date) {
+      setAddSlots([])
+      setAddSlotsLoading(false)
+      return
+    }
+    const controller = new AbortController()
     setAddSlotsLoading(true)
-    fetch(`/api/availability?date=${addForm.date}&covers=${addForm.covers}`)
+    setAddSlots([])
+    fetch(
+      `/api/availability?date=${addForm.date}&covers=${addForm.covers}`,
+      { signal: controller.signal, cache: 'no-store' },
+    )
       .then(r => r.json())
-      .then(d => { setAddSlots(d.slots || []); setAddSlotsLoading(false) })
-      .catch(() => { setAddSlots([]); setAddSlotsLoading(false) })
+      .then(d => {
+        setAddSlots(d.slots ?? [])
+        setAddSlotsLoading(false)
+      })
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          setAddSlots([])
+          setAddSlotsLoading(false)
+        }
+      })
+    return () => controller.abort()
   }, [addForm.date, addForm.covers])
 
   const login = async () => {
@@ -229,24 +247,34 @@ export default function AdminPage() {
     }
     setAddSubmitting(true)
     setAddMsg(null)
-    const res = await fetch('/api/admin/add-booking', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': getStoredPassword() },
-      body: JSON.stringify({ ...addForm, lang: 'en' }),
-    })
-    setAddSubmitting(false)
-    if (res.ok) {
-      setAddMsg({ ok: true, text: 'Booking added successfully.' })
-      setAddForm({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
-      setAddSlots([])
-      fetchData()
-    } else {
-      const d = await res.json().catch(() => ({}))
-      setAddMsg({ ok: false, text: d.error || 'Failed to add booking.' })
+    try {
+      const res = await fetch('/api/admin/add-booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': getStoredPassword() },
+        body: JSON.stringify({ ...addForm, lang: 'en' }),
+      })
+      if (res.ok) {
+        await fetchData()
+        setAddMsg({ ok: true, text: 'Booking added and list refreshed.' })
+        setAddForm({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
+        setAddSlots([])
+      } else {
+        const d = await res.json().catch(() => ({}))
+        setAddMsg({ ok: false, text: d.error || 'Failed to add booking.' })
+      }
+    } catch {
+      setAddMsg({ ok: false, text: 'Network error — please try again.' })
+    } finally {
+      setAddSubmitting(false)
     }
   }
 
-  const today = new Date().toISOString().split('T')[0]
+  const _now = new Date()
+  const today = [
+    _now.getFullYear(),
+    String(_now.getMonth() + 1).padStart(2, '0'),
+    String(_now.getDate()).padStart(2, '0'),
+  ].join('-')
   const upcoming = bookings
     .filter(b => b.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
@@ -594,9 +622,13 @@ export default function AdminPage() {
             {/* Time */}
             <div>
               <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Time <span className="text-[#b5522a]">*</span></label>
-              {addSlotsLoading && <p className="text-sm text-[#a89070]">Loading slots…</p>}
+              {addSlotsLoading && (
+                <p className="text-sm text-[#a89070] animate-pulse">Fetching available times…</p>
+              )}
               {!addSlotsLoading && addForm.date && addSlots.length === 0 && (
-                <p className="text-sm text-[#b5522a]">No available slots for this date.</p>
+                <p className="text-sm text-[#b5522a]">
+                  No slots available — the restaurant may be closed this day, or all times are fully booked.
+                </p>
               )}
               {!addSlotsLoading && addSlots.length > 0 && (
                 <select
