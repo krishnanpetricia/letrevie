@@ -260,25 +260,22 @@ export default function AdminPage() {
         body: JSON.stringify({ ...addForm, lang: 'en' }),
       })
       if (res.ok) {
-        setBookings(prev => {
-          const next = [...prev, {
-            id: Date.now().toString(),
-            name: addForm.name,
-            email: addForm.email,
-            phone: addForm.phone,
-            date: addForm.date,
-            time: addForm.time,
-            covers: Number(addForm.covers),
-            notes: addForm.notes,
-            status: 'confirmed',
-            lang: 'en',
-            created_at: new Date().toISOString(),
-          }]
-          console.log('[handleAddBooking] optimistic bookings:', next)
-          return next
-        })
+        const newBooking = {
+          id: Date.now().toString(),
+          name: addForm.name,
+          email: addForm.email,
+          phone: addForm.phone,
+          date: addForm.date,
+          time: addForm.time,
+          covers: Number(addForm.covers),
+          notes: addForm.notes,
+          status: 'confirmed',
+          lang: 'en',
+          created_at: new Date().toISOString(),
+        }
         setAddForm({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
         setAddSlots([])
+        setBookings(prev => [...prev, newBooking])
         setTab('bookings')
       } else {
         const d = await res.json().catch(() => ({}))
