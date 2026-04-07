@@ -157,8 +157,8 @@ export default function AdminPage() {
       const blData = await blRes.json()
       console.log('[fetchData] raw bData:', JSON.stringify(bData))
       console.log('[fetchData] bookings count:', bData.bookings?.length ?? 'undefined')
-      setBookings([...(bData.bookings || [])])
-      setBlocked(blData.blocked || [])
+      setBookings([...(bData.bookings ?? [])])
+      setBlocked([...(blData.blocked ?? [])])
     } catch (e) {
       console.error('[fetchData] error:', e)
     }
@@ -282,10 +282,13 @@ export default function AdminPage() {
       headers: { 'Content-Type': 'application/json', 'x-admin-password': getStoredPassword() },
       body: JSON.stringify({ id: booking.id }),
     })
-    setCancellingId(null)
     if (res.ok) {
       setCancelTarget(null)
+      setCancellingId(null)
+      setBookings(prev => prev.filter(b => b.id !== booking.id))
       await fetchData()
+    } else {
+      setCancellingId(null)
     }
   }
 
