@@ -85,8 +85,11 @@ export default function AdminPage() {
     setReady(true)
   }, [])
 
+  const initialLoadDone = useRef(false)
+
   useEffect(() => {
-    if (authed) {
+    if (authed && !initialLoadDone.current) {
+      initialLoadDone.current = true
       fetchData()
       fetchHours()
     }
