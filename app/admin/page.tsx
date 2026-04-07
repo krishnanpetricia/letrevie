@@ -280,6 +280,7 @@ export default function AdminPage() {
         setAddSlots([])
         setBookings(prev => [...prev, newBooking])
         setTab('bookings')
+        fetchData()
       } else {
         const d = await res.json().catch(() => ({}))
         setAddMsg({ ok: false, text: d.error || 'Failed to add booking.' })
@@ -292,6 +293,12 @@ export default function AdminPage() {
   }
 
   const handleCancel = async (booking: Booking) => {
+    const isRealId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(booking.id)
+    if (!isRealId) {
+      setCancelTarget(null)
+      setBookings(prev => prev.filter(b => b.id !== booking.id))
+      return
+    }
     setCancellingId(booking.id)
     const res = await fetch('/api/admin/cancel-booking', {
       method: 'PATCH',
