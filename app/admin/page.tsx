@@ -375,32 +375,31 @@ export default function AdminPage() {
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <p className="font-medium text-[#181410]">{b.name}</p>
-                  <p className="text-sm text-[#a89070]">{b.email}{b.phone ? ` · ${b.phone}` : ''}</p>
+                  {b.email && <p className="text-sm text-[#a89070]">{b.email}</p>}
+                  {b.phone && <p className="text-sm text-[#a89070]">{b.phone}</p>}
                 </div>
                 <div className="text-right flex flex-col items-end gap-1">
                   <p className="text-sm font-medium text-[#181410]">{formatDate(b.date)} · {b.time}</p>
                   <p className="text-sm text-[#a89070]">{b.covers} {Number(b.covers) === 1 ? 'cover' : 'covers'}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {b.notes && (
-                      <button
-                        onClick={() => setNoteModal({ name: b.name, note: b.notes })}
-                        className="text-[#a89070] hover:text-[#6b5d4f] transition-colors"
-                        title="View note"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round">
-                          <path d="M14 1H2C1.45 1 1 1.45 1 2v8c0 .55.45 1 1 1h2v3l3-3h7c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1z" />
-                        </svg>
-                      </button>
-                    )}
+                  {b.notes && (
                     <button
-                      onClick={() => setCancelTarget(b)}
-                      disabled={cancellingId === b.id}
-                      className="text-xs text-[#a89070] hover:text-[#b5522a] transition-colors disabled:opacity-40"
-                      title="Cancel booking"
+                      onClick={() => setNoteModal({ name: b.name, note: b.notes })}
+                      className="text-[#a89070] hover:text-[#6b5d4f] transition-colors"
+                      title="View note"
                     >
-                      {cancellingId === b.id ? 'Cancelling…' : 'Cancel'}
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round">
+                        <path d="M14 1H2C1.45 1 1 1.45 1 2v8c0 .55.45 1 1 1h2v3l3-3h7c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1z" />
+                      </svg>
                     </button>
-                  </div>
+                  )}
+                  <button
+                    onClick={() => setCancelTarget(b)}
+                    disabled={cancellingId === b.id}
+                    className="text-xs text-[#a89070] hover:text-[#b5522a] transition-colors disabled:opacity-40"
+                    title="Cancel booking"
+                  >
+                    {cancellingId === b.id ? 'Cancelling…' : 'Cancel'}
+                  </button>
                 </div>
               </div>
             </div>
