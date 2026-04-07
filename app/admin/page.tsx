@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { supabase } from '@/lib/supabase'
 
 type Booking = {
   id: string
@@ -152,22 +151,14 @@ export default function AdminPage() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Rome' })
-      const { data: bData, error: bError } = await supabase
-        .from('bookings')
-        .select('*')
-        .gte('date', today)
-        .eq('status', 'confirmed')
-        .order('date', { ascending: true })
-        .order('time', { ascending: true })
-      const { data: blData, error: blError } = await supabase
-        .from('blocked_slots')
-        .select('*')
-        .order('date', { ascending: true })
-      if (bError) console.error('[fetchData] bookings error:', bError)
-      if (blError) console.error('[fetchData] blocked error:', blError)
-      setBookings([...(bData ?? [])])
-      setBlocked([...(blData ?? [])])
+      const [bRes, blRes] = await Promise.all([
+        fetch(`/api/admin/bookings?t=${Date.now()}`, { cache: 'no-store' }),
+        fetch(`/api/admin/blocked?t=${Date.now()}`, { cache: 'no-store' }),
+      ])
+      const bData = await bRes.json()
+      const blData = await blRes.json()
+      setBookings([...(bData.bookings ?? [])])
+      setBlocked([...(blData.blocked ?? [])])
     } catch (e) {
       console.error('[fetchData] error:', e)
     }
