@@ -43,11 +43,18 @@ export default function AdminPage() {
   const [ready, setReady] = useState(false)
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
-  const [tab, setTab] = useState<'bookings' | 'block' | 'menu' | 'hours'>('bookings')
+  const [tab, setTab] = useState<'bookings' | 'block' | 'menu' | 'hours' | 'add-booking'>('bookings')
 
   const [bookings, setBookings] = useState<Booking[]>([])
   const [blocked, setBlocked] = useState<BlockedSlot[]>([])
   const [loading, setLoading] = useState(false)
+  const [noteModal, setNoteModal] = useState<{ name: string; note: string } | null>(null)
+
+  const [addForm, setAddForm] = useState({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
+  const [addSlots, setAddSlots] = useState<string[]>([])
+  const [addSlotsLoading, setAddSlotsLoading] = useState(false)
+  const [addMsg, setAddMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  const [addSubmitting, setAddSubmitting] = useState(false)
 
   const [blockDate, setBlockDate] = useState('')
   const [blockTime, setBlockTime] = useState('')
@@ -81,6 +88,15 @@ export default function AdminPage() {
       fetchHours()
     }
   }, [authed])
+
+  useEffect(() => {
+    if (!addForm.date) { setAddSlots([]); return }
+    setAddSlotsLoading(true)
+    fetch(`/api/availability?date=${addForm.date}&covers=${addForm.covers}`)
+      .then(r => r.json())
+      .then(d => { setAddSlots(d.slots || []); setAddSlotsLoading(false) })
+      .catch(() => { setAddSlots([]); setAddSlotsLoading(false) })
+  }, [addForm.date, addForm.covers])
 
   const login = async () => {
     setAuthError('')
@@ -206,6 +222,30 @@ export default function AdminPage() {
     }
   }
 
+  const handleAddBooking = async () => {
+    if (!addForm.name || !addForm.date || !addForm.time || !addForm.covers) {
+      setAddMsg({ ok: false, text: 'Name, date, time and covers are required.' })
+      return
+    }
+    setAddSubmitting(true)
+    setAddMsg(null)
+    const res = await fetch('/api/admin/add-booking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': getStoredPassword() },
+      body: JSON.stringify({ ...addForm, lang: 'en' }),
+    })
+    setAddSubmitting(false)
+    if (res.ok) {
+      setAddMsg({ ok: true, text: 'Booking added successfully.' })
+      setAddForm({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
+      setAddSlots([])
+      fetchData()
+    } else {
+      const d = await res.json().catch(() => ({}))
+      setAddMsg({ ok: false, text: d.error || 'Failed to add booking.' })
+    }
+  }
+
   const today = new Date().toISOString().split('T')[0]
   const upcoming = bookings
     .filter(b => b.date >= today)
@@ -240,10 +280,11 @@ export default function AdminPage() {
   }
 
   const tabs = [
-    { key: 'bookings', label: 'Bookings' },
-    { key: 'block', label: 'Block Dates' },
-    { key: 'menu', label: 'Menu' },
-    { key: 'hours', label: 'Hours' },
+    { key: 'bookings',    label: 'Bookings' },
+    { key: 'block',       label: 'Block Dates' },
+    { key: 'menu',        label: 'Menu' },
+    { key: 'hours',       label: 'Hours' },
+    { key: 'add-booking', label: 'Add Booking' },
   ] as const
 
   return (
@@ -291,14 +332,22 @@ export default function AdminPage() {
                   <p className="font-medium text-[#181410]">{b.name}</p>
                   <p className="text-sm text-[#a89070]">{b.email}{b.phone ? ` · ${b.phone}` : ''}</p>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex flex-col items-end gap-1">
                   <p className="text-sm font-medium text-[#181410]">{formatDate(b.date)} · {b.time}</p>
                   <p className="text-sm text-[#a89070]">{b.covers} {Number(b.covers) === 1 ? 'cover' : 'covers'}</p>
+                  {b.notes && (
+                    <button
+                      onClick={() => setNoteModal({ name: b.name, note: b.notes })}
+                      className="mt-1 text-[#a89070] hover:text-[#6b5d4f] transition-colors"
+                      title="View note"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round">
+                        <path d="M14 1H2C1.45 1 1 1.45 1 2v8c0 .55.45 1 1 1h2v3l3-3h7c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1z" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
-              {b.notes && (
-                <p className="text-sm text-[#6b5d4f] border-t border-[#f0e8df] pt-3 mt-2">{b.notes}</p>
-              )}
             </div>
           ))}
         </div>
@@ -498,6 +547,145 @@ export default function AdminPage() {
           <p className="text-xs text-[#a89070]">
             Changes update the booking system and website display immediately.
           </p>
+        </div>
+      )}
+
+      {tab === 'add-booking' && (
+        <div className="space-y-6">
+          <div className="bg-white border border-[#e8ddd4] rounded-lg p-6 space-y-5">
+            <h3 className="text-sm uppercase tracking-wide text-[#a89070]">Log a phone or walk-in booking</h3>
+
+            {/* Name */}
+            <div>
+              <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Name <span className="text-[#b5522a]">*</span></label>
+              <input
+                value={addForm.name}
+                onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))}
+                className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] placeholder-[#a89070] focus:outline-none focus:border-[#181410] transition-colors text-base"
+                placeholder="Guest name"
+              />
+            </div>
+
+            {/* Date + Covers side by side */}
+            <div className="grid grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Date <span className="text-[#b5522a]">*</span></label>
+                <input
+                  type="date"
+                  value={addForm.date}
+                  min={today}
+                  onChange={e => setAddForm(f => ({ ...f, date: e.target.value, time: '' }))}
+                  className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Covers <span className="text-[#b5522a]">*</span></label>
+                <input
+                  type="number"
+                  min={1}
+                  max={20}
+                  value={addForm.covers}
+                  onChange={e => setAddForm(f => ({ ...f, covers: Number(e.target.value), time: '' }))}
+                  className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
+                />
+              </div>
+            </div>
+
+            {/* Time */}
+            <div>
+              <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Time <span className="text-[#b5522a]">*</span></label>
+              {addSlotsLoading && <p className="text-sm text-[#a89070]">Loading slots…</p>}
+              {!addSlotsLoading && addForm.date && addSlots.length === 0 && (
+                <p className="text-sm text-[#b5522a]">No available slots for this date.</p>
+              )}
+              {!addSlotsLoading && addSlots.length > 0 && (
+                <select
+                  value={addForm.time}
+                  onChange={e => setAddForm(f => ({ ...f, time: e.target.value }))}
+                  className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
+                >
+                  <option value="">Select a time</option>
+                  {addSlots.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              )}
+            </div>
+
+            {/* Phone + Email side by side */}
+            <div className="grid grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Phone</label>
+                <input
+                  type="tel"
+                  value={addForm.phone}
+                  onChange={e => setAddForm(f => ({ ...f, phone: e.target.value }))}
+                  className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] placeholder-[#a89070] focus:outline-none focus:border-[#181410] transition-colors text-base"
+                  placeholder="Optional"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Email</label>
+                <input
+                  type="email"
+                  value={addForm.email}
+                  onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))}
+                  className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] placeholder-[#a89070] focus:outline-none focus:border-[#181410] transition-colors text-base"
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Notes</label>
+              <textarea
+                value={addForm.notes}
+                onChange={e => setAddForm(f => ({ ...f, notes: e.target.value }))}
+                rows={3}
+                className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] placeholder-[#a89070] focus:outline-none focus:border-[#181410] transition-colors text-base resize-none"
+                placeholder="e.g. called to book, wants outside table"
+              />
+            </div>
+
+            {addMsg && (
+              <p className={`text-sm ${addMsg.ok ? 'text-green-700' : 'text-[#b5522a]'}`}>
+                {addMsg.text}
+              </p>
+            )}
+
+            <button
+              onClick={handleAddBooking}
+              disabled={addSubmitting}
+              className="w-full py-4 bg-[#181410] text-[#f5e6d3] tracking-widest uppercase text-sm hover:bg-[#2d2420] transition-colors disabled:opacity-40"
+            >
+              {addSubmitting ? 'Saving…' : 'Add Booking'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {noteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/30"
+          onClick={() => setNoteModal(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl w-full max-w-sm p-6"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="font-medium text-[#181410]">{noteModal.name}</p>
+              <button
+                onClick={() => setNoteModal(null)}
+                className="text-[#a89070] hover:text-[#181410] transition-colors"
+                aria-label="Close"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M3 3l10 10M13 3L3 13" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-sm text-[#6b5d4f] leading-relaxed">{noteModal.note}</p>
+          </div>
         </div>
       )}
 
