@@ -195,7 +195,7 @@ export function Nav() {
       {/* MOBILE DRAWER */}
       <div
         className={[
-          'fixed inset-0 z-40 md:hidden transition-all duration-300',
+          'fixed inset-0 z-[100] md:hidden transition-all duration-300',
           mobileOpen ? 'pointer-events-auto' : 'pointer-events-none',
         ].join(' ')}
       >
@@ -211,7 +211,7 @@ export function Nav() {
         {/* Panel */}
         <div
           className={[
-            'absolute top-0 right-0 h-full w-72 bg-white flex flex-col',
+            'absolute top-[4.5rem] right-0 bottom-0 w-72 bg-white flex flex-col',
             'transition-transform duration-300 ease-out shadow-2xl',
             mobileOpen ? 'translate-x-0' : 'translate-x-full',
           ].join(' ')}

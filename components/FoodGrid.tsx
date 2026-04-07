@@ -29,7 +29,8 @@ export function FoodGrid() {
             alt={alt}
             fill
             className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.07]"
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+              style={{ objectPosition: 'center center' }}
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
             loading="lazy"
           />
           {/* Gradient label */}
