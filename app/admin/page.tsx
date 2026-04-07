@@ -260,19 +260,23 @@ export default function AdminPage() {
         body: JSON.stringify({ ...addForm, lang: 'en' }),
       })
       if (res.ok) {
-        setBookings(prev => [...prev, {
-          id: Date.now().toString(),
-          name: addForm.name,
-          email: addForm.email,
-          phone: addForm.phone,
-          date: addForm.date,
-          time: addForm.time,
-          covers: Number(addForm.covers),
-          notes: addForm.notes,
-          status: 'confirmed',
-          lang: 'en',
-          created_at: new Date().toISOString(),
-        }])
+        setBookings(prev => {
+          const next = [...prev, {
+            id: Date.now().toString(),
+            name: addForm.name,
+            email: addForm.email,
+            phone: addForm.phone,
+            date: addForm.date,
+            time: addForm.time,
+            covers: Number(addForm.covers),
+            notes: addForm.notes,
+            status: 'confirmed',
+            lang: 'en',
+            created_at: new Date().toISOString(),
+          }]
+          console.log('[handleAddBooking] optimistic bookings:', next)
+          return next
+        })
         setAddForm({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
         setAddSlots([])
         setTab('bookings')
@@ -381,6 +385,7 @@ export default function AdminPage() {
         ))}
       </div>
 
+      {tab === 'bookings' && console.log('[render] upcoming:', upcoming)}
       {tab === 'bookings' && (
         <div className="space-y-4">
           {loading && <p className="text-[#a89070] text-sm">Loading...</p>}
