@@ -741,13 +741,13 @@ export default function AdminPage() {
                 onClick={() => setCancelTarget(null)}
                 className="flex-1 py-2 rounded-lg border border-[#c4a882] text-sm text-[#6b5d4f] hover:bg-[#fdf8f3] transition-colors"
               >
-                Keep booking
+                No, go back
               </button>
               <button
                 onClick={() => handleCancel(cancelTarget)}
                 className="flex-1 py-2 rounded-lg bg-[#b5522a] text-white text-sm hover:bg-[#9a4424] transition-colors"
               >
-                Yes, cancel
+                Yes, cancel booking
               </button>
             </div>
           </div>
