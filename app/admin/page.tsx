@@ -307,12 +307,7 @@ export default function AdminPage() {
     }
   }
 
-  const _now = new Date()
-  const today = [
-    _now.getFullYear(),
-    String(_now.getMonth() + 1).padStart(2, '0'),
-    String(_now.getDate()).padStart(2, '0'),
-  ].join('-')
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Rome' })
   const upcoming = bookings
     .filter(b => b.date >= today)
     .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
