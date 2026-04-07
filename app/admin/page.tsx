@@ -152,12 +152,15 @@ export default function AdminPage() {
         fetch(`/api/admin/bookings?t=${Date.now()}`),
         fetch(`/api/admin/blocked?t=${Date.now()}`),
       ])
+      console.log('[fetchData] bookings status:', bRes.status)
       const bData = await bRes.json()
       const blData = await blRes.json()
+      console.log('[fetchData] raw bData:', JSON.stringify(bData))
+      console.log('[fetchData] bookings count:', bData.bookings?.length ?? 'undefined')
       setBookings(bData.bookings || [])
       setBlocked(blData.blocked || [])
     } catch (e) {
-      console.error('Fetch error:', e)
+      console.error('[fetchData] error:', e)
     }
     setLoading(false)
   }
