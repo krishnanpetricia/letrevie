@@ -280,7 +280,6 @@ export default function AdminPage() {
         setAddSlots([])
         setBookings(prev => [...prev, newBooking])
         setTab('bookings')
-        fetchData()
       } else {
         const d = await res.json().catch(() => ({}))
         setAddMsg({ ok: false, text: d.error || 'Failed to add booking.' })
