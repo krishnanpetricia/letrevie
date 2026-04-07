@@ -277,7 +277,6 @@ export default function AdminPage() {
 
   const handleCancel = async (booking: Booking) => {
     setCancellingId(booking.id)
-    setCancelTarget(null)
     const res = await fetch('/api/admin/cancel-booking', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': getStoredPassword() },
@@ -285,6 +284,7 @@ export default function AdminPage() {
     })
     setCancellingId(null)
     if (res.ok) {
+      setCancelTarget(null)
       await fetchData()
     }
   }
