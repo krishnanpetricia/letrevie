@@ -260,10 +260,23 @@ export default function AdminPage() {
         body: JSON.stringify({ ...addForm, lang: 'en' }),
       })
       if (res.ok) {
-        await fetchData()
+        setBookings(prev => [...prev, {
+          id: Date.now().toString(),
+          name: addForm.name,
+          email: addForm.email,
+          phone: addForm.phone,
+          date: addForm.date,
+          time: addForm.time,
+          covers: Number(addForm.covers),
+          notes: addForm.notes,
+          status: 'confirmed',
+          lang: 'en',
+          created_at: new Date().toISOString(),
+        }])
         setAddForm({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
         setAddSlots([])
         setTab('bookings')
+        await fetchData()
       } else {
         const d = await res.json().catch(() => ({}))
         setAddMsg({ ok: false, text: d.error || 'Failed to add booking.' })
