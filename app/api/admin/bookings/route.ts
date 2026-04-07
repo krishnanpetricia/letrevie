@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Rome' })
   console.log('[bookings] today (Europe/Rome):', today)
