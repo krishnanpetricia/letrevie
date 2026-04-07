@@ -157,7 +157,7 @@ export default function AdminPage() {
       const blData = await blRes.json()
       console.log('[fetchData] raw bData:', JSON.stringify(bData))
       console.log('[fetchData] bookings count:', bData.bookings?.length ?? 'undefined')
-      setBookings(bData.bookings || [])
+      setBookings([...(bData.bookings || [])])
       setBlocked(blData.blocked || [])
     } catch (e) {
       console.error('[fetchData] error:', e)
@@ -261,9 +261,9 @@ export default function AdminPage() {
       })
       if (res.ok) {
         await fetchData()
-        setAddMsg({ ok: true, text: 'Booking added and list refreshed.' })
         setAddForm({ name: '', date: '', time: '', covers: 2, phone: '', email: '', notes: '' })
         setAddSlots([])
+        setTab('bookings')
       } else {
         const d = await res.json().catch(() => ({}))
         setAddMsg({ ok: false, text: d.error || 'Failed to add booking.' })
