@@ -385,7 +385,7 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {tab === 'bookings' && console.log('[render] upcoming:', upcoming)}
+      {tab === 'bookings' && (console.log('[render] upcoming:', upcoming), null)}
       {tab === 'bookings' && (
         <div className="space-y-4">
           {loading && <p className="text-[#a89070] text-sm">Loading...</p>}
