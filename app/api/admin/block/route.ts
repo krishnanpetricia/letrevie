@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 export async function POST(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const { date, time, reason } = await req.json()
   if (!date) return NextResponse.json({ error: 'Date required' }, { status: 400 })
 
-  const { error } = await supabaseAdmin
+  const { error } = await supabase
     .from('blocked_slots')
     .insert({ date, time: time || null, reason: reason || null })
 
@@ -14,10 +19,15 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
 
-  const { error } = await supabaseAdmin
+  const { error } = await supabase
     .from('blocked_slots')
     .delete()
     .eq('id', id)

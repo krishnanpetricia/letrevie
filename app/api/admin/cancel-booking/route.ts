@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 export async function PATCH(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const body = await req.json().catch(() => ({}))
   const { id } = body
 
@@ -9,7 +14,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Booking id is required.' }, { status: 400 })
   }
 
-  const { error } = await supabaseAdmin
+  const { error } = await supabase
     .from('bookings')
     .update({ status: 'cancelled' })
     .eq('id', id)

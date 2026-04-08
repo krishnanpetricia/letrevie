@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 export async function GET() {
-  const { data, error } = await supabaseAdmin
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { data, error } = await supabase
     .from('blocked_slots')
     .select('*')
     .order('date', { ascending: true })

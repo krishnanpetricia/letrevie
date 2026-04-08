@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD!
 
 export async function GET() {
-  const { data, error } = await supabaseAdmin
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { data, error } = await supabase
     .from('settings')
     .select('value')
     .eq('key', 'opening_hours')
@@ -27,6 +32,11 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const password = req.headers.get('x-admin-password')
   if (password !== ADMIN_PASSWORD) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -37,7 +47,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Hours object required' }, { status: 400 })
   }
 
-  const { error } = await supabaseAdmin
+  const { error } = await supabase
     .from('settings')
     .upsert(
       { key: 'opening_hours', value: JSON.stringify(hours) },
