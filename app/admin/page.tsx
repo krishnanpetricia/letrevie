@@ -360,7 +360,7 @@ export default function AdminPage() {
           <p className="text-[#a89070] text-sm tracking-wide uppercase">Admin</p>
         </div>
         <div className="flex gap-4">
-          <button onClick={() => window.location.reload()} className="text-sm text-[#a89070] hover:text-[#181410] transition-colors">
+          <button onClick={() => fetchData()} className="text-sm text-[#a89070] hover:text-[#181410] transition-colors">
             Refresh
           </button>
           <button onClick={logout} className="text-sm text-[#a89070] hover:text-[#181410] transition-colors">
