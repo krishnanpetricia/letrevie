@@ -293,7 +293,6 @@ export default function AdminPage() {
       setCancelTarget(null)
       setCancellingId(null)
       setBookings(prev => prev.filter(b => b.id !== booking.id))
-      fetchData()
     } else {
       setCancellingId(null)
     }
