@@ -17,6 +17,7 @@ export async function GET() {
     .select('*')
     .gte('date', today)
     .eq('status', 'confirmed')
+    .not('email', 'eq', 'P')
     .order('date', { ascending: true })
     .order('time', { ascending: true })
 
