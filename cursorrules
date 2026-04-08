@@ -1,0 +1,9 @@
+MOBILE AND DESKTOP MUST ALWAYS MATCH.
+
+Every change made to desktop layout, content, navigation, or functionality must be applied to mobile in the same commit. No exceptions.
+
+When editing Nav.tsx: any link, PDF, or menu item added to the desktop nav must also appear in the mobile drawer with identical behaviour.
+
+When editing any page component: check for md: breakpoint classes and ensure the mobile (default) styles are updated to match.
+
+Never create separate mobile-only or desktop-only logic for content or navigation items. Use responsive Tailwind classes on a single shared component instead.
