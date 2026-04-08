@@ -152,7 +152,7 @@ export default function AdminPage() {
     setLoading(true)
     try {
       const [bRes, blRes] = await Promise.all([
-        fetch(`/api/admin/bookings?t=${Date.now()}`, { cache: 'no-store' }),
+        fetch(`/api/admin/bookings?t=${Date.now()}`, { method: 'POST', cache: 'no-store' }),
         fetch(`/api/admin/blocked?t=${Date.now()}`, { cache: 'no-store' }),
       ])
       const bData = await bRes.json()
