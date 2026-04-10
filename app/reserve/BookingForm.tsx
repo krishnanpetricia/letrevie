@@ -54,7 +54,11 @@ export default function BookingForm() {
     setLoadingSlots(true)
     setAvailableSlots([])
     setForm(f => ({ ...f, time: '' }))
-    fetch(`/api/availability?date=${form.date}`)
+    fetch('/api/availability', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: form.date }),
+    })
       .then(r => r.json())
       .then(data => {
         setAvailableSlots(data.slots || [])

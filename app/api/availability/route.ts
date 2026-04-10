@@ -63,14 +63,13 @@ function generateSlots(date: string, hours: Hours): string[] {
   return slots
 }
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  const { searchParams } = new URL(req.url)
-  const date = searchParams.get('date')
+  const { date } = await req.json().catch(() => ({}))
 
   if (!date) {
     return NextResponse.json({ error: 'Date required' }, { status: 400 })
