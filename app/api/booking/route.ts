@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
             </div>
             <div style="background: #f0e8df; border-radius: 8px; padding: 24px; margin: 24px 0;">
               <p style="font-size: 14px; font-weight: bold; color: #181410; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.05em;">Come raggiungerci a piedi</p>
-              <p style="font-size: 14px; line-height: 1.8; color: #6b5d4f; margin: 0;">Dal corso principale di Taormina, imbocca Via Crocifisso. Siamo al numero 4, a pochi passi dalla Piazza del Duomo. Cerchi il portone in pietra lavica con il nostro nome.</p>
+              <p style="font-size: 14px; line-height: 1.8; color: #6b5d4f; margin: 0;">Ci troviamo a pochi passi dal cuore di Taormina. Superato l'Arco di Porta Catania, utilizza l'ascensore del parcheggio fino al Livello 1. Una breve passeggiata di 100 metri oltre la curva ti condurrà direttamente al nostro ingresso.</p>
             </div>
             <p style="font-size: 16px; line-height: 1.8; color: #6b5d4f;">Per qualsiasi domanda, non esiti a contattarci:</p>
             <p style="font-size: 16px; color: #181410;">
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
             </div>
             <div style="background: #f0e8df; border-radius: 8px; padding: 24px; margin: 24px 0;">
               <p style="font-size: 14px; font-weight: bold; color: #181410; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.05em;">How to find us on foot</p>
-              <p style="font-size: 14px; line-height: 1.8; color: #6b5d4f; margin: 0;">From Taormina's main corso, turn onto Via Crocifisso. We are at number 4, a short walk from Piazza del Duomo. Look for the lava stone doorway with our name.</p>
+              <p style="font-size: 14px; line-height: 1.8; color: #6b5d4f; margin: 0;">We are just a short walk from the heart of Taormina. Pass through the arch of Porta Catania and follow signs to the Porta Catania car park. Take the elevator to Level 1, exit the car park, and walk 100 metres around the bend. You will find us right there.</p>
             </div>
             <p style="font-size: 16px; line-height: 1.8; color: #6b5d4f;">For any questions, please reach us directly:</p>
             <p style="font-size: 16px; color: #181410;">
