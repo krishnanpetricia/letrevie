@@ -99,7 +99,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (authed && tab === 'block') {
-      fetch(`/api/admin/blocked?t=${Date.now()}`, { cache: 'no-store' })
+      fetch(`/api/admin/blocked?t=${Date.now()}`, { method: 'POST', cache: 'no-store' })
         .then(r => r.json())
         .then(data => {
           console.log('[tab:block] blocked response:', data)
@@ -167,7 +167,7 @@ export default function AdminPage() {
     try {
       const [bRes, blRes] = await Promise.all([
         fetch(`/api/admin/bookings?t=${Date.now()}`, { method: 'POST', cache: 'no-store' }),
-        fetch(`/api/admin/blocked?t=${Date.now()}`, { cache: 'no-store' }),
+        fetch(`/api/admin/blocked?t=${Date.now()}`, { method: 'POST', cache: 'no-store' }),
       ])
       const bData = await bRes.json()
       const blData = await blRes.json()
