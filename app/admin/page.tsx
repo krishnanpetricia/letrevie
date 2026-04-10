@@ -220,6 +220,8 @@ export default function AdminPage() {
       body: JSON.stringify({ id }),
     })
     if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      console.error('[handleUnblock] DELETE failed', res.status, body)
       setBlocked(prev)
       setBlockMsg('Failed to remove blocked date.')
     }
