@@ -7,12 +7,12 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  const { date, time, reason } = await req.json()
+  const { date, time, time_end, reason } = await req.json()
   if (!date) return NextResponse.json({ error: 'Date required' }, { status: 400 })
 
   const { error } = await supabase
     .from('blocked_slots')
-    .insert({ date, time: time || null, reason: reason || null })
+    .insert({ date, time: time || null, time_end: time_end || null, reason: reason || null })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })

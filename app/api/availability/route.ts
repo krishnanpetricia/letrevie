@@ -89,11 +89,18 @@ export async function GET(req: NextRequest) {
 
   const { data: blockedSlots } = await supabase
     .from('blocked_slots')
-    .select('time')
+    .select('time, time_end')
     .eq('date', date)
     .not('time', 'is', null)
 
-  const blockedTimes = new Set((blockedSlots || []).map((b) => b.time))
+  // Plain HH:MM string comparison — no Date objects, no timezone conversion.
+  // Works correctly because all times are zero-padded and lexicographic order
+  // matches chronological order for HH:MM strings.
+  const isInBlockedRange = (slot: string) =>
+    (blockedSlots || []).some(b => {
+      const end = b.time_end ?? b.time
+      return slot >= b.time && slot <= end
+    })
 
   const { data: bookings } = await supabase
     .from('bookings')
@@ -116,7 +123,7 @@ export async function GET(req: NextRequest) {
   const allSlots = generateSlots(date, hours)
 
   const available = allSlots.filter((slot) => {
-    if (blockedTimes.has(slot)) return false
+    if (isInBlockedRange(slot)) return false
     const booked = coversBySlot[slot] || 0
     return booked < 6
   })

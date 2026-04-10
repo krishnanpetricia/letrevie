@@ -20,6 +20,7 @@ type BlockedSlot = {
   id: string
   date: string
   time: string | null
+  time_end: string | null
   reason: string | null
 }
 
@@ -61,6 +62,7 @@ export default function AdminPage() {
 
   const [blockDate, setBlockDate] = useState('')
   const [blockTime, setBlockTime] = useState('')
+  const [blockTimeEnd, setBlockTimeEnd] = useState('')
   const [blockReason, setBlockReason] = useState('')
   const [blockMsg, setBlockMsg] = useState('')
 
@@ -179,14 +181,21 @@ export default function AdminPage() {
 
   const handleBlock = async () => {
     if (!blockDate) { setBlockMsg('Date is required.'); return }
+    if (blockTime && !blockTimeEnd) { setBlockMsg('End time is required when blocking by time.'); return }
+    if (blockTimeEnd && !blockTime) { setBlockMsg('Start time is required when blocking by time.'); return }
     const res = await fetch('/api/admin/block', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date: blockDate, time: blockTime || null, reason: blockReason || null }),
+      body: JSON.stringify({
+        date: blockDate,
+        time: blockTime || null,
+        time_end: blockTimeEnd || null,
+        reason: blockReason || null,
+      }),
     })
     if (res.ok) {
       setBlockMsg('Blocked successfully.')
-      setBlockDate(''); setBlockTime(''); setBlockReason('')
+      setBlockDate(''); setBlockTime(''); setBlockTimeEnd(''); setBlockReason('')
       fetchData()
     } else {
       setBlockMsg('Failed to block.')
@@ -435,14 +444,28 @@ export default function AdminPage() {
             </div>
             <div>
               <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">
-                Time <span className="normal-case text-[#a89070]">(leave empty to block the whole day)</span>
+                Time range <span className="normal-case text-[#a89070]">(leave empty to block the whole day)</span>
               </label>
-              <input
-                type="time"
-                value={blockTime}
-                onChange={e => setBlockTime(e.target.value)}
-                className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
-              />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="block text-xs text-[#a89070] mb-1">From</label>
+                  <input
+                    type="time"
+                    value={blockTime}
+                    onChange={e => setBlockTime(e.target.value)}
+                    className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-xs text-[#a89070] mb-1">To</label>
+                  <input
+                    type="time"
+                    value={blockTimeEnd}
+                    onChange={e => setBlockTimeEnd(e.target.value)}
+                    className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
+                  />
+                </div>
+              </div>
             </div>
             <div>
               <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">
@@ -475,7 +498,7 @@ export default function AdminPage() {
               <div key={b.id} className="flex items-center justify-between bg-white border border-[#e8ddd4] rounded-lg px-5 py-4">
                 <div>
                   <p className="text-sm text-[#181410]">
-                    {formatDate(b.date)}{b.time ? ` · ${b.time}` : ' · All day'}
+                    {formatDate(b.date)}{b.time ? ` · ${b.time}${b.time_end ? ` – ${b.time_end}` : ''}` : ' · All day'}
                   </p>
                   {b.reason && <p className="text-xs text-[#a89070]">{b.reason}</p>}
                 </div>
