@@ -101,8 +101,11 @@ export default function AdminPage() {
     if (authed && tab === 'block') {
       fetch(`/api/admin/blocked?t=${Date.now()}`, { cache: 'no-store' })
         .then(r => r.json())
-        .then(data => setBlocked([...(data.blocked ?? [])]))
-        .catch(() => {})
+        .then(data => {
+          console.log('[tab:block] blocked response:', data)
+          setBlocked([...(data.blocked ?? [])])
+        })
+        .catch(err => console.error('[tab:block] fetch failed:', err))
     }
   }, [tab, authed])
 
@@ -168,6 +171,7 @@ export default function AdminPage() {
       ])
       const bData = await bRes.json()
       const blData = await blRes.json()
+      console.log('[fetchData] blocked response:', blData)
       setBookings([...(bData.bookings ?? [])])
       setBlocked([...(blData.blocked ?? [])])
     } catch (e) {
