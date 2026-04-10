@@ -21,6 +21,8 @@ export async function GET() {
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 'no-store, no-cache, must-revalidate',
+      'Pragma': 'no-cache',
+      'Surrogate-Control': 'no-store',
     },
   })
 }
