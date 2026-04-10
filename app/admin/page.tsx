@@ -194,12 +194,19 @@ export default function AdminPage() {
   }
 
   const handleUnblock = async (id: string) => {
-    await fetch('/api/admin/block', {
+    const prev = blocked
+    setBlocked(b => b.filter(x => x.id !== id))
+    const res = await fetch('/api/admin/block', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     })
-    fetchData()
+    if (res.ok) {
+      await fetchData()
+    } else {
+      setBlocked(prev)
+      setBlockMsg('Failed to remove blocked date.')
+    }
   }
 
   const handleMenuUpload = async () => {
