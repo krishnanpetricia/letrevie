@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+export const dynamic = 'force-dynamic'
 
 type Hours = {
   dinner_open: string
@@ -19,18 +21,6 @@ const DEFAULT_HOURS: Hours = {
   lunch_day: 0,
 }
 
-async function getHours(): Promise<Hours> {
-  try {
-    const { data } = await supabaseAdmin
-      .from('settings')
-      .select('value')
-      .eq('key', 'opening_hours')
-      .single()
-    if (data?.value) return JSON.parse(data.value)
-  } catch {}
-  return DEFAULT_HOURS
-}
-
 function timeToMinutes(t: string): number {
   const [h, m] = t.split(':').map(Number)
   return h * 60 + m
@@ -42,9 +32,14 @@ function minutesToTime(mins: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
+function parseDayOfWeek(date: string): number {
+  // Parse YYYY-MM-DD components directly — avoids UTC-midnight timezone ambiguity
+  const [y, mo, d] = date.split('-').map(Number)
+  return new Date(y, mo - 1, d).getDay()
+}
+
 function generateSlots(date: string, hours: Hours): string[] {
-  const d = new Date(date)
-  const day = d.getDay()
+  const day = parseDayOfWeek(date)
   const slots: string[] = []
 
   if (day === hours.lunch_day) {
@@ -69,6 +64,11 @@ function generateSlots(date: string, hours: Hours): string[] {
 }
 
 export async function GET(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
   const { searchParams } = new URL(req.url)
   const date = searchParams.get('date')
 
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Date required' }, { status: 400 })
   }
 
-  const { data: blockedDay } = await supabaseAdmin
+  const { data: blockedDay } = await supabase
     .from('blocked_slots')
     .select('id')
     .eq('date', date)
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ slots: [] })
   }
 
-  const { data: blockedSlots } = await supabaseAdmin
+  const { data: blockedSlots } = await supabase
     .from('blocked_slots')
     .select('time')
     .eq('date', date)
@@ -95,17 +95,24 @@ export async function GET(req: NextRequest) {
 
   const blockedTimes = new Set((blockedSlots || []).map((b) => b.time))
 
-  const { data: bookings } = await supabaseAdmin
+  const { data: bookings } = await supabase
     .from('bookings')
     .select('time, covers')
     .eq('date', date)
+    .eq('status', 'confirmed')
 
   const coversBySlot: Record<string, number> = {}
   for (const b of bookings || []) {
     coversBySlot[b.time] = (coversBySlot[b.time] || 0) + Number(b.covers)
   }
 
-  const hours = await getHours()
+  const { data: settingsRow } = await supabase
+    .from('settings')
+    .select('value')
+    .eq('key', 'opening_hours')
+    .single()
+
+  const hours: Hours = settingsRow?.value ? JSON.parse(settingsRow.value) : DEFAULT_HOURS
   const allSlots = generateSlots(date, hours)
 
   const available = allSlots.filter((slot) => {
