@@ -201,9 +201,7 @@ export default function AdminPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     })
-    if (res.ok) {
-      await fetchData()
-    } else {
+    if (!res.ok) {
       setBlocked(prev)
       setBlockMsg('Failed to remove blocked date.')
     }
