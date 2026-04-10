@@ -98,6 +98,15 @@ export default function AdminPage() {
   }, [authed])
 
   useEffect(() => {
+    if (authed && tab === 'block') {
+      fetch(`/api/admin/blocked?t=${Date.now()}`, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => setBlocked([...(data.blocked ?? [])]))
+        .catch(() => {})
+    }
+  }, [tab, authed])
+
+  useEffect(() => {
     if (!addForm.date) {
       setAddSlots([])
       setAddSlotsLoading(false)
