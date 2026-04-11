@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const RESTAURANT_EMAIL = process.env.RESTAURANT_EMAIL!
-const FROM_EMAIL = process.env.FROM_EMAIL!
+const FROM_EMAIL = 'prenotazioni@letrevietaormina.com'
 
 function formatDate(dateStr: string) {
   const [y, m, d] = dateStr.split('-')
