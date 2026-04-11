@@ -66,9 +66,11 @@ export default function AdminPage() {
   const [blockReason, setBlockReason] = useState('')
   const [blockMsg, setBlockMsg] = useState('')
 
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [uploading, setUploading] = useState(false)
-  const [menuMsg, setMenuMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  const menuFileRef   = useRef<HTMLInputElement>(null)
+  const piattiFileRef = useRef<HTMLInputElement>(null)
+  const viniFileRef   = useRef<HTMLInputElement>(null)
+  const [uploadingType, setUploadingType] = useState<string | null>(null)
+  const [menuMsgs, setMenuMsgs] = useState<Record<string, { ok: boolean; text: string } | null>>({})
 
   const [hours, setHours] = useState<Hours>({
     dinner_open: '19:00',
@@ -231,28 +233,44 @@ export default function AdminPage() {
     }
   }
 
-  const handleMenuUpload = async () => {
-    const file = fileRef.current?.files?.[0]
-    if (!file) { setMenuMsg({ ok: false, text: 'Please select a PDF file.' }); return }
-    if (file.type !== 'application/pdf') {
-      setMenuMsg({ ok: false, text: 'Only PDF files are accepted.' })
+  type MenuType = 'menu' | 'piatti-del-giorno' | 'carta-dei-vini'
+
+  const handleMenuUpload = async (menuType: MenuType) => {
+    const ref = {
+      'menu':              menuFileRef,
+      'piatti-del-giorno': piattiFileRef,
+      'carta-dei-vini':    viniFileRef,
+    }[menuType]
+
+    const file = ref.current?.files?.[0]
+    if (!file) {
+      setMenuMsgs(p => ({ ...p, [menuType]: { ok: false, text: 'Please select a PDF file.' } }))
       return
     }
-    setUploading(true)
-    setMenuMsg(null)
+    if (file.type !== 'application/pdf') {
+      setMenuMsgs(p => ({ ...p, [menuType]: { ok: false, text: 'Only PDF files are accepted.' } }))
+      return
+    }
+
+    setUploadingType(menuType)
+    setMenuMsgs(p => ({ ...p, [menuType]: null }))
+
     const formData = new FormData()
     formData.append('file', file)
+    formData.append('menu_type', menuType)
+
     const res = await fetch('/api/upload-menu', {
       method: 'POST',
       headers: { 'x-admin-password': getStoredPassword() },
       body: formData,
     })
-    setUploading(false)
+
+    setUploadingType(null)
     if (res.ok) {
-      setMenuMsg({ ok: true, text: 'Menu updated. Changes are live.' })
-      if (fileRef.current) fileRef.current.value = ''
+      setMenuMsgs(p => ({ ...p, [menuType]: { ok: true, text: 'Menu updated. Changes are live.' } }))
+      if (ref.current) ref.current.value = ''
     } else {
-      setMenuMsg({ ok: false, text: 'Upload failed. Please try again.' })
+      setMenuMsgs(p => ({ ...p, [menuType]: { ok: false, text: 'Upload failed. Please try again.' } }))
     }
   }
 
@@ -531,33 +549,41 @@ export default function AdminPage() {
 
       {tab === 'menu' && (
         <div className="space-y-6">
-          <div className="bg-white border border-[#e8ddd4] rounded-lg p-6 space-y-5">
-            <h3 className="text-sm uppercase tracking-wide text-[#a89070]">Update menu</h3>
-            <p className="text-sm text-[#6b5d4f]">
-              Upload a PDF to replace the current menu. The change goes live immediately.
-            </p>
-            <div>
-              <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-3">Select PDF file</label>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="application/pdf"
-                className="block w-full text-sm text-[#6b5d4f] file:mr-4 file:py-2 file:px-5 file:border file:border-[#c4a882] file:text-xs file:tracking-widest file:uppercase file:bg-transparent file:text-[#181410] file:cursor-pointer hover:file:border-[#181410] transition-colors"
-              />
-            </div>
-            {menuMsg && (
-              <p className={`text-sm ${menuMsg.ok ? 'text-green-700' : 'text-[#b5522a]'}`}>
-                {menuMsg.text}
+          {(
+            [
+              { type: 'menu'               as MenuType, label: 'Main Menu',         path: 'menus/menu.pdf',               ref: menuFileRef   },
+              { type: 'piatti-del-giorno'  as MenuType, label: 'Piatti del Giorno', path: 'menus/piatti-del-giorno.pdf',  ref: piattiFileRef },
+              { type: 'carta-dei-vini'     as MenuType, label: 'Carta dei Vini',    path: 'menus/carta-dei-vini.pdf',     ref: viniFileRef   },
+            ]
+          ).map(({ type, label, path, ref }) => (
+            <div key={type} className="bg-white border border-[#e8ddd4] rounded-lg p-6 space-y-5">
+              <h3 className="text-sm uppercase tracking-wide text-[#a89070]">{label}</h3>
+              <p className="text-sm text-[#6b5d4f]">
+                Replaces <span className="font-mono text-[11px] text-[#a89070]">{path}</span> immediately.
               </p>
-            )}
-            <button
-              onClick={handleMenuUpload}
-              disabled={uploading}
-              className="w-full py-4 bg-[#181410] text-[#f5e6d3] tracking-widest uppercase text-sm hover:bg-[#2d2420] transition-colors disabled:opacity-40"
-            >
-              {uploading ? 'Uploading...' : 'Upload menu'}
-            </button>
-          </div>
+              <div>
+                <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-3">Select PDF file</label>
+                <input
+                  ref={ref}
+                  type="file"
+                  accept="application/pdf"
+                  className="block w-full text-sm text-[#6b5d4f] file:mr-4 file:py-2 file:px-5 file:border file:border-[#c4a882] file:text-xs file:tracking-widest file:uppercase file:bg-transparent file:text-[#181410] file:cursor-pointer hover:file:border-[#181410] transition-colors"
+                />
+              </div>
+              {menuMsgs[type] && (
+                <p className={`text-sm ${menuMsgs[type]!.ok ? 'text-green-700' : 'text-[#b5522a]'}`}>
+                  {menuMsgs[type]!.text}
+                </p>
+              )}
+              <button
+                onClick={() => handleMenuUpload(type)}
+                disabled={uploadingType === type}
+                className="w-full py-4 bg-[#181410] text-[#f5e6d3] tracking-widest uppercase text-sm hover:bg-[#2d2420] transition-colors disabled:opacity-40"
+              >
+                {uploadingType === type ? 'Uploading...' : `Upload ${label}`}
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
