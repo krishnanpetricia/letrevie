@@ -24,12 +24,23 @@ export async function POST(req: NextRequest) {
     .upload('menu.pdf', buffer, {
       contentType: 'application/pdf',
       upsert: true,
+      cacheControl: 'no-cache',
     })
- 
+
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
- 
-  return NextResponse.json({ success: true })
+
+  const version = Date.now()
+
+  const { error: dbError } = await supabaseAdmin
+    .from('site_settings')
+    .upsert({ key: 'menu_last_updated', value: String(version) })
+
+  if (dbError) {
+    return NextResponse.json({ error: dbError.message }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true, version })
 }
  

@@ -1,12 +1,27 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 import { PageHero } from '@/components/PageHero'
 import { T } from '@/components/T'
 import { FadeIn } from '@/components/FadeIn'
 
-const MENU_URL = process.env.NEXT_PUBLIC_SUPABASE_URL + '/storage/v1/object/public/menus/menu.pdf'
+const MENU_BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL + '/storage/v1/object/public/menus/menu.pdf'
 
 export function MenuContent() {
+  const [menuUrl, setMenuUrl] = useState(MENU_BASE_URL)
+
+  useEffect(() => {
+    supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'menu_last_updated')
+      .single()
+      .then(({ data }) => {
+        if (data?.value) setMenuUrl(`${MENU_BASE_URL}?v=${data.value}`)
+      })
+  }, [])
+
   return (
     <>
       <PageHero
@@ -33,7 +48,7 @@ export function MenuContent() {
             </p>
 
             <a
-              href={MENU_URL}
+              href={menuUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-terra hover:bg-terra-deep text-white text-[11px] tracking-[0.24em] uppercase px-14 py-5 transition-all duration-200 hover:-translate-y-0.5 no-underline"
