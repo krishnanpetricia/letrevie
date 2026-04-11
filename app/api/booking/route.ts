@@ -149,6 +149,7 @@ export async function POST(req: NextRequest) {
       resend.emails.send({
         from: `Le Tre Vie <${FROM_EMAIL}>`,
         to: email,
+        replyTo: 'osteria.letrevie@gmail.com',
         subject: isIt
           ? `Prenotazione confermata — Le Tre Vie, ${displayDate} ore ${time}`
           : `Booking confirmed — Le Tre Vie, ${displayDate} at ${time}`,
