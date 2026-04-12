@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { supabaseAdmin } from '@/lib/supabase'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Guarded so the module initialises without throwing when RESEND_API_KEY is
+// absent (e.g. local builds). Any actual send attempt will fail at call time.
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : (null as unknown as Resend)
 const RESTAURANT_EMAIL = process.env.RESTAURANT_EMAIL!
 const FROM_EMAIL = 'prenotazioni@letrevietaormina.com'
 
