@@ -5,11 +5,14 @@ import { useEffect, useState, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { T } from './T'
 import { useLang, type Lang } from '@/context/LangContext'
+import { supabase } from '@/lib/supabase'
 
-const MENU_PDFS = {
-  menu:   'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Menu%20(1).pdf',
-  giorno: 'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Piatti%20del%20Giorno.pdf',
-  vini:   'https://ohjtylsquvmbuvjpvokk.supabase.co/storage/v1/object/public/menus/Carta%20dei%20Vini.pdf',
+const STORAGE_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL + '/storage/v1/object/public/menus/'
+
+const BASE_MENU_PDFS = {
+  menu:   STORAGE_BASE + 'menu.pdf',
+  giorno: STORAGE_BASE + 'piatti-del-giorno.pdf',
+  vini:   STORAGE_BASE + 'carta-dei-vini.pdf',
 }
 
 export function Nav() {
@@ -17,10 +20,27 @@ export function Nav() {
   const [menuOpen,   setMenuOpen]   = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [foodOpen,   setFoodOpen]   = useState(false)
+  const [menuPdfs,   setMenuPdfs]   = useState(BASE_MENU_PDFS)
   const pathname                    = usePathname()
   const isHome                      = pathname === '/'
   const { lang, setLang }           = useLang()
   const dropdownRef                 = useRef<HTMLLIElement>(null)
+
+  useEffect(() => {
+    supabase
+      .from('site_settings')
+      .select('key, value')
+      .in('key', ['menu_last_updated', 'piatti_last_updated', 'vini_last_updated'])
+      .then(({ data }) => {
+        if (!data) return
+        const byKey = Object.fromEntries(data.map(r => [r.key, r.value]))
+        setMenuPdfs({
+          menu:   byKey.menu_last_updated   ? `${BASE_MENU_PDFS.menu}?v=${byKey.menu_last_updated}`     : BASE_MENU_PDFS.menu,
+          giorno: byKey.piatti_last_updated ? `${BASE_MENU_PDFS.giorno}?v=${byKey.piatti_last_updated}` : BASE_MENU_PDFS.giorno,
+          vini:   byKey.vini_last_updated   ? `${BASE_MENU_PDFS.vini}?v=${byKey.vini_last_updated}`     : BASE_MENU_PDFS.vini,
+        })
+      })
+  }, [])
 
   useEffect(() => {
     setScrolled(window.scrollY > 80)
@@ -99,7 +119,7 @@ export function Nav() {
               {menuOpen && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-black/6 min-w-[200px] py-2 z-50">
                   <a
-                    href={MENU_PDFS.menu}
+                    href={menuPdfs.menu}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMenuOpen(false)}
@@ -108,7 +128,7 @@ export function Nav() {
                     <T en="Menu" it="Menù" />
                   </a>
                   <a
-                    href={MENU_PDFS.giorno}
+                    href={menuPdfs.giorno}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMenuOpen(false)}
@@ -117,7 +137,7 @@ export function Nav() {
                     <T en="Daily Specials" it="Piatti del Giorno" />
                   </a>
                   <a
-                    href={MENU_PDFS.vini}
+                    href={menuPdfs.vini}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMenuOpen(false)}
@@ -253,7 +273,7 @@ export function Nav() {
               {foodOpen && (
                 <div className="pl-4 py-2 flex flex-col gap-1">
                   <a
-                    href={MENU_PDFS.menu}
+                    href={menuPdfs.menu}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileOpen(false)}
@@ -262,7 +282,7 @@ export function Nav() {
                     <T en="Menu" it="Menù" />
                   </a>
                   <a
-                    href={MENU_PDFS.giorno}
+                    href={menuPdfs.giorno}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileOpen(false)}
@@ -271,7 +291,7 @@ export function Nav() {
                     <T en="Daily Specials" it="Piatti del Giorno" />
                   </a>
                   <a
-                    href={MENU_PDFS.vini}
+                    href={menuPdfs.vini}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setMobileOpen(false)}
