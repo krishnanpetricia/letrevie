@@ -55,12 +55,6 @@ export function Kitchen() {
         >
           <T en="Book Your Table →" it="Prenota il Tuo Tavolo →" />
         </a>
-        <a
-          href="/reserve"
-          className="mt-4 self-start text-[11px] tracking-[0.22em] uppercase text-white/50 hover:text-white/90 border-b border-white/20 hover:border-white/50 pb-0.5 transition-colors duration-200 no-underline"
-        >
-          <T en="About Rosario & the restaurant →" it="La nostra storia →" />
-        </a>
       </FadeIn>
     </section>
   )
