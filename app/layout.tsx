@@ -36,6 +36,9 @@ export const metadata: Metadata = {
     description: 'The restaurant the locals have been sending their friends to for years.',
     images: ['/og-image.jpg'],
   },
+  verification: {
+    google: 'BPinjXfqTK_XUgY_Ppub5y8ZNzy_tnbigYw-QKTX9cs',
+  },
 }
 
 const localBusinessSchema = {
