@@ -4,9 +4,9 @@ import { ReserveContent } from './ReserveContent'
 import type { Metadata }  from 'next'
 
 export const metadata: Metadata = {
-  title: 'Reserve a Table — Osteria Le Tre Vie, Taormina',
-  description: 'Book your table at Osteria Le Tre Vie in Taormina. Dinner nightly except Wednesday. Sunday lunch available.',
-  // Prevent indexing of the booking step itself if preferred
+  title: 'Book a Table · Osteria Le Tre Vie Taormina',
+  description:
+    "Reserve your table at Osteria Le Tre Vie, one of Taormina's most loved restaurants. Dinner nightly except Wednesday. Sunday lunch available. Free parking on site.",
   // robots: { index: false },
 }
 
