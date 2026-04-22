@@ -25,7 +25,7 @@ export function FindUs() {
         <T
           en={
             <p className="text-[19px] leading-[1.85] text-ink-mid">
-              A six-minute walk from Porta Catania. Comfortable shoes are all you need.
+              Osteria Le Tre Vie is a six-minute walk from Porta Catania, Taormina. Comfortable shoes are all you need.
               Coming by car, parking is free and right at our entrance — one of the few
               in Taormina. Coming by taxi, most local drivers know us well and will bring
               you straight to the door.

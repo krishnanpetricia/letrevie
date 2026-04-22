@@ -56,7 +56,7 @@ export function Hero() {
         {/* Sub */}
         <p className="text-white text-[17px] font-light leading-[1.8] max-w-[540px] mx-auto mb-14" style={{textShadow: '0 1px 12px rgba(0,0,0,0.5)'}}>
           <T
-            en="Six minutes from the arch of Porta Catania. A terrace, a view over Taormina's hillside, and food that makes you stay longer than you planned."
+            en="Beyond Porta Catania, where the view opens onto the Sicilian hills and the food will make you forget the clock. One of Taormina's few restaurants where the locals still eat."
             it="Oltre Porta Catania, dove la vista si apre sulle colline e i sapori ti convincono a dimenticare l'orologio. Il posto perfetto per rilassarsi e godere di un'atmosfera unica."
           />
         </p>

@@ -26,9 +26,9 @@ export function Kitchen() {
           en={
             <div className="space-y-5">
               <p className="text-[19px] leading-[1.85] text-white/75">
-                Chef Rosario has spent a lifetime learning how to cook well. He is not chasing trends.
-                He is focused on what is in front of him — the quality of the ingredients, the care in
-                the preparation, and the pleasure of the person eating.
+                Rosario, owner and chef, has spent forty years mastering the art of fine cuisine in Taormina.
+                He doesn&apos;t follow current trends; his passion lies in the quality of the ingredients
+                and the meticulous preparation.
               </p>
               <p className="text-[19px] leading-[1.85] text-white/75">
                 The kind of food that makes you slow down and order another glass.
