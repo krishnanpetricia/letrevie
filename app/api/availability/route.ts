@@ -6,19 +6,13 @@ export const dynamic = 'force-dynamic'
 type Hours = {
   dinner_open: string
   dinner_close: string
-  lunch_open: string
-  lunch_close: string
   closed_day: number
-  lunch_day: number
 }
 
 const DEFAULT_HOURS: Hours = {
   dinner_open: '19:00',
   dinner_close: '22:30',
-  lunch_open: '12:00',
-  lunch_close: '14:00',
   closed_day: 3,
-  lunch_day: 0,
 }
 
 function timeToMinutes(t: string): number {
@@ -41,15 +35,6 @@ function parseDayOfWeek(date: string): number {
 function generateSlots(date: string, hours: Hours): string[] {
   const day = parseDayOfWeek(date)
   const slots: string[] = []
-
-  if (day === hours.lunch_day) {
-    let mins = timeToMinutes(hours.lunch_open)
-    const end = timeToMinutes(hours.lunch_close)
-    while (mins <= end) {
-      slots.push(minutesToTime(mins))
-      mins += 15
-    }
-  }
 
   if (day !== hours.closed_day) {
     let mins = timeToMinutes(hours.dinner_open)

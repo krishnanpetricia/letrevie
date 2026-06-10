@@ -27,10 +27,7 @@ type BlockedSlot = {
 type Hours = {
   dinner_open: string
   dinner_close: string
-  lunch_open: string
-  lunch_close: string
   closed_day: number
-  lunch_day: number
 }
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -75,10 +72,7 @@ export default function AdminPage() {
   const [hours, setHours] = useState<Hours>({
     dinner_open: '19:00',
     dinner_close: '22:30',
-    lunch_open: '12:00',
-    lunch_close: '14:00',
     closed_day: 3,
-    lunch_day: 0,
   })
   const [hoursLoading, setHoursLoading] = useState(false)
   const [hoursMsg, setHoursMsg] = useState<{ ok: boolean; text: string } | null>(null)
@@ -616,42 +610,6 @@ export default function AdminPage() {
               <select
                 value={hours.closed_day}
                 onChange={e => setHours(h => ({ ...h, closed_day: Number(e.target.value) }))}
-                className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
-              >
-                {DAY_NAMES.map((d, i) => (
-                  <option key={i} value={i}>{d}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="bg-white border border-[#e8ddd4] rounded-lg p-6 space-y-6">
-            <h3 className="text-sm uppercase tracking-wide text-[#a89070]">Lunch service</h3>
-            <div className="grid grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Opens</label>
-                <input
-                  type="time"
-                  value={hours.lunch_open}
-                  onChange={e => setHours(h => ({ ...h, lunch_open: e.target.value }))}
-                  className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Last booking</label>
-                <input
-                  type="time"
-                  value={hours.lunch_close}
-                  onChange={e => setHours(h => ({ ...h, lunch_close: e.target.value }))}
-                  className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs text-[#a89070] uppercase tracking-wide mb-2">Lunch day</label>
-              <select
-                value={hours.lunch_day}
-                onChange={e => setHours(h => ({ ...h, lunch_day: Number(e.target.value) }))}
                 className="w-full bg-transparent border-b border-[#c4a882] py-3 text-[#181410] focus:outline-none focus:border-[#181410] transition-colors text-base"
               >
                 {DAY_NAMES.map((d, i) => (

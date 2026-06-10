@@ -37,8 +37,8 @@ export function Footer() {
             </a>
             <br /><br />
             <T
-              en={<>Dinner: 19:00–22:30 · Closed Wednesdays<br />Sunday Lunch: 12:00–14:00</>}
-              it={<>Cena: 19:00–22:30 · Chiuso il mercoledì<br />Pranzo domenicale: 12:00–14:00</>}
+              en={<>Dinner: 19:00–22:30 · Closed Wednesdays</>}
+              it={<>Cena: 19:00–22:30 · Chiuso il mercoledì</>}
             />
           </p>
         </div>

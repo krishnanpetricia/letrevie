@@ -16,21 +16,11 @@ const items = [
   },
   {
     delay: 0.1,
-    label: <T en="Sunday Lunch" it="Pranzo Domenicale" />,
-    value: (
-      <T
-        en={<>12:00 – 14:00<br />Sundays only</>}
-        it={<>12:00 – 14:00<br />Solo la domenica</>}
-      />
-    ),
-  },
-  {
-    delay: 0.2,
     label: <T en="Closed" it="Giorno di Chiusura" />,
     value: <T en="Wednesdays" it="Il mercoledì" />,
   },
   {
-    delay: 0.3,
+    delay: 0.2,
     label: <T en="Reservations" it="Prenotazioni" />,
     value: (
       <a href="tel:+393520415653" className="text-white hover:text-gold transition-colors duration-200">
@@ -42,7 +32,7 @@ const items = [
 
 export function Essentials() {
   return (
-    <div className="bg-ink grid grid-cols-2 md:grid-cols-4">
+    <div className="bg-ink grid grid-cols-2 md:grid-cols-3">
       {items.map(({ delay, label, value }, i) => (
         <FadeIn key={i} delay={delay}>
           <div

@@ -20,10 +20,7 @@ export async function GET() {
       hours: {
         dinner_open: '19:00',
         dinner_close: '22:30',
-        lunch_open: '12:00',
-        lunch_close: '14:00',
         closed_day: 3,
-        lunch_day: 0,
       },
     })
   }
